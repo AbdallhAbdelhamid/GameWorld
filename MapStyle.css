@@ -1,0 +1,51 @@
+.pacman {
+    width: 50px;
+    height: 50px;
+    background-image: url('./pic/xosf.gif');
+    background-size: 50px;
+    background-color: black;
+    display: inline-block;
+}
+/*
+.pacmanclosed {
+    width: 50px;
+    height: 50px;
+    background-image: url('./pic/XOsfc.png');
+    background-size: 50px;
+    background-color: black;
+    display: inline-block;
+}
+*/
+
+.wall {
+    width: 50px;
+    height: 50px;
+    background-image: url('./pic/wall.png');
+    display: inline-block;
+}
+
+.coin {
+    width: 50px;
+    height: 50px;
+    background-image: url('./pic/coin.png');
+    display: inline-block;
+}
+.empty {
+    width: 50px;
+    height: 50px;
+    background-image: url('./pic/black.jpg');
+    display: inline-block;
+}
+
+div {
+    margin: -2px;
+}
+
+#Map {
+    width: 970px;
+    height: 550px;
+    position: fixed;
+    left: 15%;
+    top: 10%;
+    
+}
