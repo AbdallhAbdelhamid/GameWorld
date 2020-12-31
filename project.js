@@ -1,6 +1,8 @@
 //levelOneGrid variable is for drawing the map for level 1
 //where numbers inside it are as follown: 1=wall object, 2=Pacman object, 3=coin object, 4=empty object
 // check if it's better as 2d array or 1d array
+// new line to test git
+
 
 // ghost // power up 
 var levelOneGrid = [  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
