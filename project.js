@@ -9,12 +9,13 @@ var levelOneGrid = [  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
                     , 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1
                     , 1, 3, 1, 1, 3, 1, 1, 1, 3, 3, 3, 3, 3, 1, 1, 1, 3, 1, 1, 3, 1
                     , 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 1
-                    , 1, 3, 1, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1
-                    , 1, 3, 1, 3, 3, 3, 3, 3, 1, 1, 3, 1, 1, 3, 3, 3, 3, 3, 1, 3, 1
-                    , 1, 3, 1, 1, 1, 1, 3, 1, 1, 3, 3, 3, 1, 1, 3, 1, 1, 1, 1, 3, 1
-                    , 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 1, 3, 1
                     , 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1
-                    , 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                    , 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1
+                    , 1, 3, 3, 3, 3, 3, 3, 1, 1, 3, 3, 3, 1, 1, 3, 3, 3, 3, 3, 3, 1
+                    , 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1
+                    , 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1
+                    , 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
+
 // maps from 2d to 1d
 function MapGrid2dTo1d(x , y ) {
     // TODO:
@@ -197,7 +198,7 @@ function Monster(destinationXIn , destinationYIn , PositinX,PositinY)
     this.destination = [destinationXIn,destinationYIn];
     this.AttackPos = [0,0];
     this.speed=5;
-    this.direction= 2; // up=0 // down=1 // left=2  //right=3
+    this.direction= 0; // up=0 // down=1 // left=2  //right=3
     
     this.scatter=false;
     
@@ -215,11 +216,11 @@ Object.defineProperty(Monster.prototype,"move",
             
             levelOneGrid[ MapGrid2dTo1d(that.position[0],that.position[1]) ] = 3; // remove current mob and place a coin
 
-            var dx = [ 0, 0, -1, 1 ], dy = [ -1, 1, 0, 0 ]; // all possible path: down top left right
+            var dx = [ 0, 0, -1, 1 ], dy = [ -1, 1, 0, 0 ]; // all possible path:  up=0  down=1  left=2 right=3
 
             // attack mode
-            that.AttackPos[0] = MapGrid1dTo2d(PacmanPos)[0] + that.destination[0]; // pos to attack
-            that.AttackPos[1] = MapGrid1dTo2d(PacmanPos)[1] + that.destination[1]; // pos to attack
+            that.AttackPos[0] = MapGrid1dTo2d(PacmanPos)[1] + that.destination[0]; // pos to attack // pac man
+            that.AttackPos[1] = MapGrid1dTo2d(PacmanPos)[0] + that.destination[1]; // pos to attack // pac man
             console.log(that.AttackPos[0],that.AttackPos[1]);
 
     var allDistance=[0,0,0,0]; // down top left right
@@ -227,13 +228,14 @@ Object.defineProperty(Monster.prototype,"move",
 	{
         
         if ( levelOneGrid[ MapGrid2dTo1d ( (that.position[0]+dx[i] ),(that.position[1] + dy[i]) ) ] == 1)
-			 allDistance[i] = 5000000;
+			 allDistance[i] = 115000000;
 		/*else if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '_'&&ghost_isLife[ghostNum - 1])
 			arr[i] = 4000000;*/
 		else
-			allDistance[i] = GetDistance ( (that.position[0]+dx[i] ),(that.position[1] + dy[i]) ,
-                                         (that.AttackPos[0]      ),(that.AttackPos[1]        )  );
-	}
+			allDistance[i] = GetDistance (( that.position[0]+dx[i] ),(that.position[1] + dy[i]) ,
+                                         (  that.AttackPos[0]      ),(that.AttackPos[1]        )  );
+	console.log(( that.position[0]+dx[i] )+", "+(that.position[1] + dy[i]))
+    }
    // console.log("before dirctions");
     //console.log(allDistance[0],allDistance[1],allDistance[2],allDistance[3]);
      if ( that.direction == 0  )
@@ -394,9 +396,9 @@ void ghostmoving(ghostStruct& gost, Sprite& ghostSprite, double Stepx, double St
 */
 
 
-var blinky=new Monster(0,0,10,5);
-levelOneGrid[MapGrid2dTo1d(10,5)] = 10;
-//blinky.move();
+var blinky=new Monster(0,0,6,6);
+levelOneGrid[MapGrid2dTo1d(6,6)] = 10;
+blinky.move();
 drawGrid(levelOneGrid);
 
 
