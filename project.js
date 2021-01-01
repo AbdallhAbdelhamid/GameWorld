@@ -1,3 +1,6 @@
+var PlayerScore = 0; //player scoring tracker
+var PacmanPos = 22; //pacman index in array
+
 // objects holds names for various grid objects.
 var gridObjects = {
     WALL: 1,
@@ -17,20 +20,27 @@ var keyboard = {
     ARROWRIGHT: '39',
 }
 
+
 //levelOneGrid variable is for drawing the map for level 1
 //where numbers inside it are as follown: 1=wall object, 2=Pacman object, 3=coin object, 4=empty object
 // check if it's better as 2d array or 1d array
 // ghost // power up 
 var levelOneGrid = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-                    , 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1
+                    , 1, 2, 3, 3, 3, 3, 3, 3, 3, 1, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1
                     , 1, 3, 1, 1, 3, 1, 1, 1, 3, 3, 3, 3, 3, 1, 1, 1, 3, 1, 1, 3, 1
                     , 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 1
                     , 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1
                     , 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1
                     , 1, 3, 3, 3, 3, 3, 3, 1, 1, 3, 3, 3, 1, 1, 3, 3, 3, 3, 3, 3, 1
                     , 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1
-                    , 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1
-                    , 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                    , 1, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1,
+                    1, 3, 1, 3, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 3, 1, 3, 1, 1,
+                    3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 1, 1, 3,
+                    1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 3
+                    , 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1
+                    , 3, 1, 1, 1, 1, 1, 1, 3, 1, 3, 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 3
+                    , 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1, 1, 3, 3, 3, 3, 3, 1
+                    , 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
 
 // maps from 2d to 1d
 function MapGrid2dTo1d(x, y) {
@@ -50,8 +60,6 @@ function MapGrid1dTo2d(index) {
 
 
 
-var PlayerScore = 0; //player scoring tracker
-var PacmanPos = 22;
 // the drawing function to draw the map
 function drawGrid(gridArrIn) {
     // delete old grid from screen
@@ -72,31 +80,47 @@ drawGrid(levelOneGrid);
 var lastDirection = 0; //1= last direction was right, 2= last direction was left, 3= last direction was up, , 4= last direction was down
 
 
-// TO DO : add enums for directions // 
+function drawLives(numberoflife)
+    {
+        document.getElementById("life").innerHTML += "";
+        for (var i=0;i<numberoflife;i++)
+        {
+            
+        document.getElementById("life").innerHTML+="<div class='pacman'></div>"
+        }
+
+    }
+    
+ drawLives(3);
+
+//*****************************************************class pacman*******************************************************************
+
+var PacmanClass = function () {
+    this.lastDirection = 0; //1= last direction was right, 2= last direction was left, 3= last direction was up, , 4= last direction was down
+    this.timer;
+}
+var pacmanObj = new PacmanClass();
+
 function checkKey(e) {
     e = window.event;
-    if ((e.keyCode == keyboard.ARROWUP) && (lastDirection != 3)) //key up
+
+    if ((e.keyCode == keyboard.ARROWUP) && (pacmanObj.lastDirection != 3)) //key up
     {
-        clearTimeout(timer);
-        lastDirection = 3;
-        MoveUp2();
-    } else if ((e.keyCode == keyboard.ARROWDOWN) && (lastDirection != 4)) //key down
+        pacmanObj.PacmanMovementCheck(e)
+    } else if ((e.keyCode == keyboard.ARROWDOWN) && (pacmanObj.lastDirection != 4)) //key down
     {
-        clearTimeout(timer);
-        lastDirection = 4;
-        MoveDown2();
-    } else if ((e.keyCode == keyboard.ARROWLEFT) && (lastDirection != 2)) //key left  
+        pacmanObj.PacmanMovementCheck(e)
+    } else if ((e.keyCode == keyboard.ARROWLEFT) && (pacmanObj.lastDirection != 2)) //key left  
     {
-        clearTimeout(timer);
-        lastDirection = 2;
-        MoveLeft2();
-    } else if ((e.keyCode == keyboard.ARROWRIGHT) && (lastDirection != 1)) //key right // 1 : last direction was right
+        pacmanObj.PacmanMovementCheck(e)
+    } else if ((e.keyCode == keyboard.ARROWRIGHT) && (pacmanObj.lastDirection != 1)) //key right 
     {
-        clearTimeout(timer);
-        lastDirection = 1;
-        MoveRight2();
+        pacmanObj.PacmanMovementCheck(e)
     }
 }
+
+// TO DO : add enums for directions // 
+
 
 document.onkeydown = checkKey; //to listen for intial user event
 //function for pacman right movement
@@ -106,74 +130,134 @@ document.onkeydown = checkKey; //to listen for intial user event
     if (levelOneGrid[PacmanPos + 1] == 3) PacmanPos++
 }*/
 
-var timer;
 
-function MoveRight2() {
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//This function is to make sure that pacman cannot change direction if the requested direction has a wall
+PacmanClass.prototype.PacmanMovementCheck = function (e) {
+    //1= last direction was right, 2= last direction was left, 3= last direction was up, , 4= last direction was down
+    if ((e.keyCode == keyboard.ARROWUP)) //key up
+    {
+        if (pacmanObj.lastDirection == 0) {
+            pacmanObj.lastDirection = 3;
+            pacmanObj.timer = setTimeout(pacmanObj.MoveUp2, 200)
+        } else if (levelOneGrid[PacmanPos - 21] != 1) {
+            pacmanObj.lastDirection = 3;
+            clearTimeout(pacmanObj.timer);
+            pacmanObj.timer = setTimeout(pacmanObj.MoveUp2, 10)
+        } //else CallTheLastAction();
+
+    } else if ((e.keyCode == keyboard.ARROWDOWN)) //key down
+    {
+        if (pacmanObj.lastDirection == 0) {
+            pacmanObj.lastDirection = 4;
+            pacmanObj.timer = setTimeout(pacmanObj.MoveDown2, 200)
+        } else if (levelOneGrid[PacmanPos + 21] != 1) {
+            pacmanObj.lastDirection = 4;
+            clearTimeout(pacmanObj.timer);
+            pacmanObj.timer = setTimeout(pacmanObj.MoveDown2, 10)
+        } //else CallTheLastAction();
+
+    } else if ((e.keyCode == keyboard.ARROWLEFT)) //key left  
+    {
+        if (pacmanObj.lastDirection == 0) {
+            pacmanObj.lastDirection = 2;
+            pacmanObj.timer = setTimeout(pacmanObj.MoveLeft2, 200)
+        } else if (levelOneGrid[PacmanPos - 1] != 1) {
+            pacmanObj.lastDirection = 2;
+            clearTimeout(pacmanObj.timer);
+            pacmanObj.timer = setTimeout(pacmanObj.MoveLeft2, 10)
+        } //else CallTheLastAction();
+
+    } else if ((e.keyCode == keyboard.ARROWRIGHT)) //key right // 1 : last direction was right
+    {
+        if (pacmanObj.lastDirection == 0) {
+            pacmanObj.lastDirection = 1;
+            pacmanObj.timer = setTimeout(pacmanObj.MoveRight2, 200)
+        } else if (levelOneGrid[PacmanPos + 1] != 1) {
+            pacmanObj.lastDirection = 1;
+            clearTimeout(pacmanObj.timer);
+            pacmanObj.timer = setTimeout(pacmanObj.MoveRight2, 10)
+        } //else CallTheLastAction();
+    }
+}
+
+
+
+PacmanClass.prototype.MoveRight2 = function () {
     // TODO: function get next move for pac-man
     //1=wall object, 2=Pacman object, 3=coin object, 4=empty object
     var _NextPos = levelOneGrid[PacmanPos + 1]
     if (_NextPos == 1) {
-        $(".pacman").css('background-image', "url('./pic/xosfc.png')")
+        //$(".pacman").css('background-image', "url('./pic/new2.png')")
         return 0;
     } else if (_NextPos == 3) {
         PlayerScore++; //increase score
+        ScoringTracker(); //call score function
         levelOneGrid[PacmanPos++] = 4; //replace to empty
         levelOneGrid[PacmanPos] = 2;
         $(".pacman").next().removeClass('coin').addClass('pacman').css({
             'transform': 'rotate(0deg)'
         });
-        $(".pacman").eq(0).removeClass('pacman').css('background-image', "").addClass('empty');
+        $(".pacman").eq(0).removeClass('pacman').addClass('empty');
+        //$(".pacman").eq(0).removeClass('pacman').css('background-image', "").addClass('empty');
     } else if (_NextPos == 4) {
         levelOneGrid[PacmanPos++] = 4;
         levelOneGrid[PacmanPos] = 2;
         $(".pacman").next().removeClass('empty').addClass('pacman').css({
             'transform': 'rotate(0deg)'
         });
-        $(".pacman").eq(0).removeClass('pacman').css('background-image', "").addClass('empty');
+        $(".pacman").eq(0).removeClass('pacman').addClass('empty');
+        //$(".pacman").eq(0).removeClass('pacman').css('background-image', "").addClass('empty');
     }
-    timer = setTimeout(MoveRight2, 250)
+    pacmanObj.timer = setTimeout(pacmanObj.MoveRight2, 200)
 }
 
-function MoveLeft2() {
+PacmanClass.prototype.MoveLeft2 = function () {
     //1=wall object, 2=Pacman object, 3=coin object, 4=empty object
     var _PrevPos = levelOneGrid[PacmanPos - 1]
     if (_PrevPos == 1) {
-        $(".pacman").css('background-image', "url('./pic/xosfc.png')")
+        //$(".pacman").css('background-image', "url('./pic/new2.png')")
         return 0;
     } else if (_PrevPos == 3) {
         PlayerScore++; //increase score
+        ScoringTracker(); //call score function
         levelOneGrid[PacmanPos--] = 4; //replace to empty
         levelOneGrid[PacmanPos] = 2;
         $(".pacman").prev().removeClass('coin').addClass('pacman').css({
             'transform': 'rotate(180deg)'
         });
-        $(".pacman").eq(1).removeClass('pacman').css('background-image', "").addClass('empty');
+        $(".pacman").eq(1).removeClass('pacman').addClass('empty');
+        //$(".pacman").eq(1).removeClass('pacman').css('background-image', "").addClass('empty');
     } else if (_PrevPos == 4) {
         levelOneGrid[PacmanPos--] = 4;
         levelOneGrid[PacmanPos] = 2;
         $(".pacman").prev().removeClass('empty').addClass('pacman').css({
             'transform': 'rotate(180deg)'
         });
-        $(".pacman").eq(1).removeClass('pacman').css('background-image', "").addClass('empty');
+        $(".pacman").eq(1).removeClass('pacman').addClass('empty');
+        //$(".pacman").eq(1).removeClass('pacman').css('background-image', "").addClass('empty');
     }
-    timer = setTimeout(MoveLeft2, 250)
+    pacmanObj.timer = setTimeout(pacmanObj.MoveLeft2, 200)
 }
 
-function MoveDown2() {
+PacmanClass.prototype.MoveDown2 = function () {
     //1=wall object, 2=Pacman object, 3=coin object, 4=empty object
     var _NextDownPos = levelOneGrid[PacmanPos + 21]
     if (_NextDownPos == 1) {
-        $(".pacman").css('background-image', "url('./pic/xosfc.png')")
+        //$(".pacman").css('background-image', "url('./pic/new2.png')")
         return 0;
     } else if (_NextDownPos == 3) {
         PlayerScore++; //increase score
+        ScoringTracker(); //call score function
         levelOneGrid[PacmanPos] = 4; //replace to empty
         levelOneGrid[PacmanPos + 21] = 2;
         PacmanPos += 21;
         $("div").eq(1 + PacmanPos).removeClass('coin').addClass('pacman').css({
             'transform': 'rotate(90deg)'
         });
-        $(".pacman").eq(0).removeClass('pacman').css('background-image', "").addClass('empty');
+        $(".pacman").eq(0).removeClass('pacman').addClass('empty');
+        //$(".pacman").eq(0).removeClass('pacman').css('background-image', "").addClass('empty');
     } else if (_NextDownPos == 4) {
         levelOneGrid[PacmanPos] = 4;
         levelOneGrid[PacmanPos + 21] = 2;
@@ -181,26 +265,29 @@ function MoveDown2() {
         $("div").eq(1 + PacmanPos).removeClass('empty').addClass('pacman').css({
             'transform': 'rotate(90deg)'
         });
-        $(".pacman").eq(0).removeClass('pacman').css('background-image', "").addClass('empty');
+        $(".pacman").eq(0).removeClass('pacman').addClass('empty');
+        //$(".pacman").eq(0).removeClass('pacman').css('background-image', "").addClass('empty');
     }
-    timer = setTimeout(MoveDown2, 250)
+    pacmanObj.timer = setTimeout(pacmanObj.MoveDown2, 200)
 }
 
-function MoveUp2() {
+PacmanClass.prototype.MoveUp2 = function () {
     //1=wall object, 2=Pacman object, 3=coin object, 4=empty object
     var _NextUpPos = levelOneGrid[PacmanPos - 21]
     if (_NextUpPos == 1) {
-        $(".pacman").css('background-image', "url('./pic/xosfc.png')")
+        //$(".pacman").css('background-image', "url('./pic/new2.png')")
         return 0;
     } else if (_NextUpPos == 3) {
         PlayerScore++; //increase score
+        ScoringTracker(); //call score function
         levelOneGrid[PacmanPos] = 4; //replace to empty
         levelOneGrid[PacmanPos - 21] = 2;
         PacmanPos -= 21;
         $("div").eq(PacmanPos + 1).removeClass('coin').addClass('pacman').css({
             'transform': 'rotate(-90deg)'
         });
-        $(".pacman").eq(1).removeClass('pacman').css('background-image', "").addClass('empty');
+        $(".pacman").eq(1).removeClass('pacman').addClass('empty');
+        //$(".pacman").eq(1).removeClass('pacman').css('background-image', "").addClass('empty');
     } else if (_NextUpPos == 4) {
         levelOneGrid[PacmanPos] = 4; //replace to empty
         levelOneGrid[PacmanPos - 21] = 2;
@@ -208,10 +295,28 @@ function MoveUp2() {
         $("div").eq(PacmanPos + 1).removeClass('empty').addClass('pacman').css({
             'transform': 'rotate(-90deg)'
         });
-        $(".pacman").eq(1).removeClass('pacman').css('background-image', "").addClass('empty');
+        $(".pacman").eq(1).removeClass('pacman').addClass('empty');
+        //$(".pacman").eq(1).removeClass('pacman').css('background-image', "").addClass('empty');
     }
-    timer = setTimeout(MoveUp2, 250)
+    pacmanObj.timer = setTimeout(pacmanObj.MoveUp2, 200)
 }
+
+function ScoringTracker() {
+    document.getElementById("score").innerHTML = "Score: " + PlayerScore;
+    // if (PlayerScore ==158) { setInterval(GameWon,10); }
+    if (PlayerScore ==7) { GameWon(); }//158
+
+}
+function GameWon() {
+    drawGrid(levelOneGrid);
+    $("#score").html("Congratulations You Have Won").effect("shake");
+
+};
+
+
+
+
+
 
 /*********************************  Monster Class  ***************************************************/
 // enum to save directions
@@ -236,7 +341,7 @@ function Monster(destinationXIn, destinationYIn, PositionX, PositionY, GridObjec
         x: PositionX,
         y: PositionY
     };
-    this.destination = { // msh 3arf asmeh eh bsra7a >_>
+    this.destination = { // msh 3arf asmeha eh bsra7a >_>
         x: destinationXIn,
         y: destinationYIn
     };
@@ -245,6 +350,7 @@ function Monster(destinationXIn, destinationYIn, PositionX, PositionY, GridObjec
         x: 0,
         y: 0
     };
+    
     this.speed = 5; // not used yet.
 
     this.direction = direction.UP;
@@ -265,9 +371,9 @@ Monster.mode = mobMode.SCATTER; // default behaviur for mobs.
 Object.defineProperty(Monster.prototype, "move", {
 
         value: function () {
-            if(this.lastGridObject == gridObjects.COIN || this.lastGridObject == gridObjects.EMPTY)
+            if (this.lastGridObject == gridObjects.COIN || this.lastGridObject == gridObjects.EMPTY)
                 levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.lastGridObject; // remove current mob and place a coin
-            
+
             var dx = [0, 0, -1, 1],
                 dy = [-1, 1, 0, 0]; // all possible path:  up=0  down=1  left=2 right=3
 
@@ -295,7 +401,7 @@ Object.defineProperty(Monster.prototype, "move", {
 
             for (var i = 0; i < 4; i++) {
 
-                if (levelOneGrid[MapGrid2dTo1d((this.position.x + dx[i]), (this.position.y + dy[i]))] == 1)
+                if (levelOneGrid[MapGrid2dTo1d((this.position.x + dx[i]), (this.position.y + dy[i]))]==gridObjects.WALL)
                     allDistance[i] = 115000000;
                 /*else if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '_'&&ghost_isLife[ghostNum - 1])
                 	arr[i] = 4000000;*/
@@ -335,7 +441,7 @@ Object.defineProperty(Monster.prototype, "move", {
                 this.position.x++;
 
             }
-            
+
             this.lastGridObject = levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)];
             levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.GridObjectType;
         },
@@ -482,7 +588,23 @@ setTimeout(function () {
 
 setInterval(function () { // GAME LOOP 
 
-    mobArr.forEach(mob => mob.move());
-    
+    mobArr.forEach( mob => mob.move() );
+
     drawGrid(levelOneGrid);
 }, 500);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
