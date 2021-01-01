@@ -654,7 +654,6 @@ setInterval(function () { // GAME LOOP
 
    //  drawGrid(levelOneGrid);
 }, 500);
-=======
 
 
 
