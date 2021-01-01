@@ -5,8 +5,8 @@ var gridObjects = {
     COIN: 3,
     EMPTY: 4,
     BLINKY: 10,
-    CLYDE:11,
-    INKY:12
+    CLYDE: 11,
+    INKY: 12
 };
 Object.freeze(gridObjects);
 
@@ -41,8 +41,11 @@ function MapGrid2dTo1d(x, y) {
 
 // maps from 1d to 2d
 function MapGrid1dTo2d(index) {
- //   return [index % 21, parseInt(index / 21)];
-    return {xPos:index%21 ,yPos:parseInt(index/21)};
+    //   return [index % 21, parseInt(index / 21)];
+    return {
+        xPos: index % 21,
+        yPos: parseInt(index / 21)
+    };
 }
 
 
@@ -60,8 +63,8 @@ function drawGrid(gridArrIn) {
         else if (gridArrIn[i] == gridObjects.COIN) document.getElementById("Map").innerHTML += "<div class='coin'></div>"
         else if (gridArrIn[i] == gridObjects.EMPTY) document.getElementById("Map").innerHTML += "<div class='empty'></div>"
         else if (gridArrIn[i] == gridObjects.BLINKY) document.getElementById("Map").innerHTML += "<div class='blinkymob'></div>"
-        else if (gridArrIn[i] == gridObjects.CLYDE) document.getElementById("Map").innerHTML +=  "<div class='clydemob'></div>"
-        else if (gridArrIn[i] == gridObjects.INKY) document.getElementById("Map").innerHTML +=  "<div class='inkymob'></div>"
+        else if (gridArrIn[i] == gridObjects.CLYDE) document.getElementById("Map").innerHTML += "<div class='clydemob'></div>"
+        else if (gridArrIn[i] == gridObjects.INKY) document.getElementById("Map").innerHTML += "<div class='inkymob'></div>"
     }
 }
 
@@ -220,56 +223,72 @@ var direction = {
 }
 
 var mobMode = { // defines monsters hehaviur
-    ATTACK:0,
-    SCATTER:1,
-    AFRAID:2
+    ATTACK: 0,
+    SCATTER: 1,
+    AFRAID: 2
 }
 
 Object.freeze(direction);
 
 // monster class
-function Monster(destinationXIn, destinationYIn, PositionX, PositionY , GridObjectTypeIn) {
-    this.position = {              // Holds current position of mob
+function Monster(destinationXIn, destinationYIn, PositionX, PositionY, GridObjectTypeIn) {
+    this.position = { // Holds current position of mob
         x: PositionX,
         y: PositionY
     };
-    this.destination = {           // msh 3arf asmeh eh bsra7a >_>
-        x:destinationXIn,
-        y:destinationYIn
-    }; 
-    
-    this.AttackPos = {              // Defines the position which the monster is heading to.
-        x:0,
-        y:0
+    this.destination = { // msh 3arf asmeh eh bsra7a >_>
+        x: destinationXIn,
+        y: destinationYIn
     };
-    this.speed = 5;                 // not used yet.
-    
+
+    this.AttackPos = { // Defines the position which the monster is heading to.
+        x: 0,
+        y: 0
+    };
+    this.speed = 5; // not used yet.
+
     this.direction = direction.UP;
 
     this.scatter = false;
-    
+
     this.GridObjectType = GridObjectTypeIn;
-    
+
     levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.GridObjectType;
 
-
+    this.lastGridObject = gridObjects.EMPTY;
 }
 
-Monster.mode= mobMode.ATTACK;
+Monster.mode = mobMode.SCATTER; // default behaviur for mobs.
 
 
 // Monster movement
 Object.defineProperty(Monster.prototype, "move", {
 
-    value: function () {
-        levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = 3; // remove current mob and place a coin
-
+        value: function () {
+            if(this.lastGridObject == gridObjects.COIN || this.lastGridObject == gridObjects.EMPTY)
+                levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.lastGridObject; // remove current mob and place a coin
+            
             var dx = [0, 0, -1, 1],
                 dy = [-1, 1, 0, 0]; // all possible path:  up=0  down=1  left=2 right=3
 
             // attack mode
-            this.AttackPos.x = MapGrid1dTo2d(PacmanPos).xPos + this.destination.x; // pos to attack // pac man
-            this.AttackPos.y = MapGrid1dTo2d(PacmanPos).yPos + this.destination.y; // pos to attack // pac man
+            if (Monster.mode == mobMode.ATTACK) {
+                this.AttackPos.x = MapGrid1dTo2d(PacmanPos).xPos + this.destination.x; // pos to attack // pac man
+                this.AttackPos.y = MapGrid1dTo2d(PacmanPos).yPos + this.destination.y; // pos to attack // pac man
+            }
+            // scatter mode
+            else if (Monster.mode == mobMode.SCATTER && this.GridObjectType == gridObjects.BLINKY) {
+                this.AttackPos.x = 3; //  blinky scatters to this x pos
+                this.AttackPos.y = 3; //  blinky scatters to this y pos
+
+            } else if (Monster.mode == mobMode.SCATTER && this.GridObjectType == gridObjects.INKY) {
+                this.AttackPos.x = 18; // blinky scatters to this x pos
+                this.AttackPos.y = 4; // blinky scatters to this y pos
+
+            } else if (Monster.mode == mobMode.SCATTER && this.GridObjectType == gridObjects.CLYDE) {
+                this.AttackPos.x = 18; // blinky scatters to this x pos
+                this.AttackPos.y = 8; // blinky scatters to this y pos
+            }
 
             var allDistance = [0, 0, 0, 0]; // down top left right. Holds eculidian distance between 
             //all 4 possible paths and the target
@@ -299,35 +318,51 @@ Object.defineProperty(Monster.prototype, "move", {
 
             var minDistance = Math.min.apply(null, allDistance);
 
-            if (allDistance[0] == minDistance) { // move up
-                this.direction = 0;
+            if (allDistance[direction.UP] == minDistance) { // move up
+                this.direction = direction.UP;
                 this.position.y--;
 
-            } else if (allDistance[1] == minDistance) { // move down
-                this.direction = 1;
+            } else if (allDistance[direction.DOWN] == minDistance) { // move down
+                this.direction = direction.DOWN;
                 this.position.y++;
 
-            } else if (allDistance[2] == minDistance) { // move left
-                this.direction = 2;
+            } else if (allDistance[direction.LEFT] == minDistance) { // move left
+                this.direction = direction.LEFT;
                 this.position.x--;
 
-            } else if (allDistance[3] == minDistance) { // move right
-                this.direction = 3
+            } else if (allDistance[direction.RIGHT] == minDistance) { // move right
+                this.direction = direction.RIGHT
                 this.position.x++;
 
             }
-
+            
+            this.lastGridObject = levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)];
             levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.GridObjectType;
-            drawGrid(levelOneGrid);
-
         },
+        enumerable: false,
+        writable: false,
+        configurable: false
+
+    }
+
+);
+
+//Change bots behaviur between scatter || Attack every 10 seconds.
+Object.defineProperty(Monster, "switchMovement", {
+    value: function () {
+        setInterval(function () {
+            if (Monster.mode == mobMode.ATTACK) {
+                Monster.mode = mobMode.SCATTER;
+            } else if (Monster.mode == mobMode.SCATTER) {
+                Monster.mode = mobMode.ATTACK;
+            }
+        }, 10000);
+
+    },
     enumerable: false,
     writable: false,
     configurable: false
-
-    }
- 
-);
+})
 
 
 function GetDistance(x1, y1, x2, y2) { // calculates eculudian distance between two coordinates
@@ -428,36 +463,26 @@ void ghostmoving(ghostStruct& gost, Sprite& ghostSprite, double Stepx, double St
 
 */
 
-var blinky = new Monster( 2,  2, 10, 4, gridObjects.BLINKY);
-var clyde  = new Monster(-2, -2,  9, 6, gridObjects.CLYDE);
-var inky   = new Monster( 0,  3, 11, 6, gridObjects.INKY);
+var blinky = new Monster(2, 2, 10, 4, gridObjects.BLINKY);
+var clyde = new Monster(7, 0, 9, 6, gridObjects.CLYDE);
+var inky = new Monster(-5, 3, 11, 6, gridObjects.INKY);
+Monster.switchMovement();
+
 var mobArr = [blinky];
 drawGrid(levelOneGrid);
 
+setTimeout(function () {
+    mobArr[1] = clyde
+}, 5000) // release clyde after 5 seconds.
+setTimeout(function () {
+    mobArr[2] = inky
+}, 10000) // release clyde after 10 seconds.
 
 
-setTimeout( function(){mobArr[1]=clyde} ,5000) // release clyde after 5 seconds.
-setTimeout( function(){mobArr[2]=inky} ,10000) // release clyde after 10 seconds.
 
+setInterval(function () { // GAME LOOP 
 
-
-
-setInterval(function () {       // GAME LOOP 
-
-    mobArr.forEach(mob=>mob.move() );
+    mobArr.forEach(mob => mob.move());
+    
     drawGrid(levelOneGrid);
-},500);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}, 500);
