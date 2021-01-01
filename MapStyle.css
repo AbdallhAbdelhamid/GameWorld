@@ -61,3 +61,23 @@ div {
     display: inline-block;  
 }
 
+.clydemob
+{
+    width: 50px;
+    height: 50px;
+    background-image: url('./pic/580b57fcd9996e24bc43c31b.png');
+    background-size: 50px;
+    background-color: black;
+    display: inline-block;  
+}
+
+.inkymob{
+    
+    width: 50px;
+    height: 50px;
+    background-image: url('./pic/580b57fcd9996e24bc43c310.png');
+    background-size: 50px;
+    background-color: black;
+    display: inline-block; 
+}
+

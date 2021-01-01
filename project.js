@@ -4,7 +4,9 @@ var gridObjects = {
     PACMAN: 2,
     COIN: 3,
     EMPTY: 4,
-    BLINKY: 10
+    BLINKY: 10,
+    CLYDE:11,
+    INKY:12
 };
 Object.freeze(gridObjects);
 
@@ -58,7 +60,8 @@ function drawGrid(gridArrIn) {
         else if (gridArrIn[i] == gridObjects.COIN) document.getElementById("Map").innerHTML += "<div class='coin'></div>"
         else if (gridArrIn[i] == gridObjects.EMPTY) document.getElementById("Map").innerHTML += "<div class='empty'></div>"
         else if (gridArrIn[i] == gridObjects.BLINKY) document.getElementById("Map").innerHTML += "<div class='blinkymob'></div>"
-
+        else if (gridArrIn[i] == gridObjects.CLYDE) document.getElementById("Map").innerHTML +=  "<div class='clydemob'></div>"
+        else if (gridArrIn[i] == gridObjects.INKY) document.getElementById("Map").innerHTML +=  "<div class='inkymob'></div>"
     }
 }
 
@@ -216,6 +219,12 @@ var direction = {
     RIGHT: 3
 }
 
+var mobMode = { // defines monsters hehaviur
+    ATTACK:0,
+    SCATTER:1,
+    AFRAID:2
+}
+
 Object.freeze(direction);
 
 // monster class
@@ -246,83 +255,82 @@ function Monster(destinationXIn, destinationYIn, PositionX, PositionY , GridObje
 
 }
 
+Monster.mode= mobMode.ATTACK;
+
 
 // Monster movement
 Object.defineProperty(Monster.prototype, "move", {
 
     value: function () {
-        var that = this;
-        setInterval(function () {
-
-            levelOneGrid[MapGrid2dTo1d(that.position.x, that.position.y)] = 3; // remove current mob and place a coin
+        levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = 3; // remove current mob and place a coin
 
             var dx = [0, 0, -1, 1],
                 dy = [-1, 1, 0, 0]; // all possible path:  up=0  down=1  left=2 right=3
 
             // attack mode
-            that.AttackPos.x = MapGrid1dTo2d(PacmanPos).xPos + that.destination.x; // pos to attack // pac man
-            that.AttackPos.y = MapGrid1dTo2d(PacmanPos).yPos + that.destination.y; // pos to attack // pac man
-            console.log(that.AttackPos.x, that.AttackPos.y);
+            this.AttackPos.x = MapGrid1dTo2d(PacmanPos).xPos + this.destination.x; // pos to attack // pac man
+            this.AttackPos.y = MapGrid1dTo2d(PacmanPos).yPos + this.destination.y; // pos to attack // pac man
 
             var allDistance = [0, 0, 0, 0]; // down top left right. Holds eculidian distance between 
             //all 4 possible paths and the target
 
             for (var i = 0; i < 4; i++) {
 
-                if (levelOneGrid[MapGrid2dTo1d((that.position.x + dx[i]), (that.position.y + dy[i]))] == 1)
+                if (levelOneGrid[MapGrid2dTo1d((this.position.x + dx[i]), (this.position.y + dy[i]))] == 1)
                     allDistance[i] = 115000000;
                 /*else if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '_'&&ghost_isLife[ghostNum - 1])
                 	arr[i] = 4000000;*/
                 else
-                    allDistance[i] = GetDistance((that.position.x + dx[i]), (that.position.y + dy[i]),
-                        (that.AttackPos.x), (that.AttackPos.y));
+                    allDistance[i] = GetDistance((this.position.x + dx[i]), (this.position.y + dy[i]),
+                        (this.AttackPos.x), (this.AttackPos.y));
             }
 
-            if (that.direction == direction.UP)
+            if (this.direction == direction.UP)
                 allDistance[direction.DOWN] = 10000000;
 
-            if (that.direction == direction.DOWN)
+            if (this.direction == direction.DOWN)
                 allDistance[direction.UP] = 10000000;
 
-            if (that.direction == direction.LEFT)
+            if (this.direction == direction.LEFT)
                 allDistance[direction.RIGHT] = 10000000;
 
-            if (that.direction == direction.RIGHT)
+            if (this.direction == direction.RIGHT)
                 allDistance[direction.LEFT] = 10000000;
 
             var minDistance = Math.min.apply(null, allDistance);
 
             if (allDistance[0] == minDistance) { // move up
-                that.direction = 0;
-                that.position.y--;
+                this.direction = 0;
+                this.position.y--;
 
             } else if (allDistance[1] == minDistance) { // move down
-                that.direction = 1;
-                that.position.y++;
+                this.direction = 1;
+                this.position.y++;
 
             } else if (allDistance[2] == minDistance) { // move left
-                that.direction = 2;
-                that.position.x--;
+                this.direction = 2;
+                this.position.x--;
 
             } else if (allDistance[3] == minDistance) { // move right
-                that.direction = 3
-                that.position.x++;
+                this.direction = 3
+                this.position.x++;
 
             }
 
-            levelOneGrid[MapGrid2dTo1d(that.position.x, that.position.y)] = that.GridObjectType;
+            levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.GridObjectType;
             drawGrid(levelOneGrid);
 
-        }, 1000)
-
-    },
+        },
     enumerable: false,
     writable: false,
     configurable: false
-})
+
+    }
+ 
+);
 
 
-function GetDistance(x1, y1, x2, y2) {
+function GetDistance(x1, y1, x2, y2) { // calculates eculudian distance between two coordinates
 
     return (Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
 
@@ -420,7 +428,36 @@ void ghostmoving(ghostStruct& gost, Sprite& ghostSprite, double Stepx, double St
 
 */
 
-
-var blinky = new Monster(0, 0, 6, 6,gridObjects.BLINKY);
-blinky.move();
+var blinky = new Monster( 2,  2, 10, 4, gridObjects.BLINKY);
+var clyde  = new Monster(-2, -2,  9, 6, gridObjects.CLYDE);
+var inky   = new Monster( 0,  3, 11, 6, gridObjects.INKY);
+var mobArr = [blinky];
 drawGrid(levelOneGrid);
+
+
+
+setTimeout( function(){mobArr[1]=clyde} ,5000) // release clyde after 5 seconds.
+setTimeout( function(){mobArr[2]=inky} ,10000) // release clyde after 10 seconds.
+
+
+
+
+setInterval(function () {       // GAME LOOP 
+
+    mobArr.forEach(mob=>mob.move() );
+    drawGrid(levelOneGrid);
+},500);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
