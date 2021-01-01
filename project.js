@@ -1,11 +1,25 @@
+// objects holds names for various grid objects.
+var gridObjects = {
+    WALL: 1,
+    PACMAN: 2,
+    COIN: 3,
+    EMPTY: 4,
+    BLINKY: 10
+};
+Object.freeze(gridObjects);
+
+var keyboard = {
+    ARROWUP: '38',
+    ARROWDOWN: '40',
+    ARROWLEFT: '37',
+    ARROWRIGHT: '39',
+}
+
 //levelOneGrid variable is for drawing the map for level 1
 //where numbers inside it are as follown: 1=wall object, 2=Pacman object, 3=coin object, 4=empty object
 // check if it's better as 2d array or 1d array
-// new line to test git
-
-
 // ghost // power up 
-var levelOneGrid = [  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+var levelOneGrid = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
                     , 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1
                     , 1, 3, 1, 1, 3, 1, 1, 1, 3, 3, 3, 3, 3, 1, 1, 1, 3, 1, 1, 3, 1
                     , 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 1
@@ -14,18 +28,19 @@ var levelOneGrid = [  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
                     , 1, 3, 3, 3, 3, 3, 3, 1, 1, 3, 3, 3, 1, 1, 3, 3, 3, 3, 3, 3, 1
                     , 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1
                     , 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1
-                    , 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
+                    , 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 
 // maps from 2d to 1d
-function MapGrid2dTo1d(x , y ) {
+function MapGrid2dTo1d(x, y) {
     // TODO:
     // RENAME the function
-    return y * 21 + x ;
-    
+    return y * 21 + x;
 }
 
+// maps from 1d to 2d
 function MapGrid1dTo2d(index) {
-    return [parseInt(index/21),index%21];
+ //   return [index % 21, parseInt(index / 21)];
+    return {xPos:index%21 ,yPos:parseInt(index/21)};
 }
 
 
@@ -39,10 +54,10 @@ function drawGrid(gridArrIn) {
     for (var i = 0; i < gridArrIn.length; i++) {
         // draw new grid
         if (gridArrIn[i] == 1) document.getElementById("Map").innerHTML += "<div class='wall'></div>"
-        else if (gridArrIn[i] == 2 ) document.getElementById("Map").innerHTML += "<div class='pacman'></div>"
-        else if (gridArrIn[i] == 3 ) document.getElementById("Map").innerHTML += "<div class='coin'></div>"
-        else if (gridArrIn[i] == 4 ) document.getElementById("Map").innerHTML += "<div class='empty'></div>"
-        else if (gridArrIn[i] == 10) document.getElementById("Map").innerHTML += "<div class='blinkymob'></div>"
+        else if (gridArrIn[i] == gridObjects.PACMAN) document.getElementById("Map").innerHTML += "<div class='pacman'></div>"
+        else if (gridArrIn[i] == gridObjects.COIN) document.getElementById("Map").innerHTML += "<div class='coin'></div>"
+        else if (gridArrIn[i] == gridObjects.EMPTY) document.getElementById("Map").innerHTML += "<div class='empty'></div>"
+        else if (gridArrIn[i] == gridObjects.BLINKY) document.getElementById("Map").innerHTML += "<div class='blinkymob'></div>"
 
     }
 }
@@ -50,24 +65,26 @@ function drawGrid(gridArrIn) {
 drawGrid(levelOneGrid);
 var lastDirection = 0; //1= last direction was right, 2= last direction was left, 3= last direction was up, , 4= last direction was down
 
+
+// TO DO : add enums for directions // 
 function checkKey(e) {
     e = window.event;
-    if ((e.keyCode == '38') && (lastDirection != 3)) //key up
+    if ((e.keyCode == keyboard.ARROWUP) && (lastDirection != 3)) //key up
     {
         clearTimeout(timer);
         lastDirection = 3;
         MoveUp2();
-    } else if ((e.keyCode == '40') && (lastDirection != 4)) //key down
+    } else if ((e.keyCode == keyboard.ARROWDOWN) && (lastDirection != 4)) //key down
     {
         clearTimeout(timer);
         lastDirection = 4;
         MoveDown2();
-    } else if ((e.keyCode == '37') && (lastDirection != 2)) //key left  
+    } else if ((e.keyCode == keyboard.ARROWLEFT) && (lastDirection != 2)) //key left  
     {
         clearTimeout(timer);
         lastDirection = 2;
         MoveLeft2();
-    } else if ((e.keyCode == '39') && (lastDirection != 1)) //key right // 1 : last direction was right
+    } else if ((e.keyCode == keyboard.ARROWRIGHT) && (lastDirection != 1)) //key right // 1 : last direction was right
     {
         clearTimeout(timer);
         lastDirection = 1;
@@ -182,7 +199,7 @@ function MoveUp2() {
         levelOneGrid[PacmanPos] = 4; //replace to empty
         levelOneGrid[PacmanPos - 21] = 2;
         PacmanPos -= 21;
-        $("div").eq(PacmanPos+1).removeClass('empty').addClass('pacman').css({
+        $("div").eq(PacmanPos + 1).removeClass('empty').addClass('pacman').css({
             'transform': 'rotate(-90deg)'
         });
         $(".pacman").eq(1).removeClass('pacman').css('background-image', "").addClass('empty');
@@ -190,117 +207,125 @@ function MoveUp2() {
     timer = setTimeout(MoveUp2, 250)
 }
 
-/******************************************************************************************/
+/*********************************  Monster Class  ***************************************************/
+// enum to save directions
+var direction = {
+    UP: 0,
+    DOWN: 1,
+    LEFT: 2,
+    RIGHT: 3
+}
 
-function Monster(destinationXIn , destinationYIn , PositinX,PositinY)
-{
-    this.position= [PositinX,PositinY];
-    this.destination = [destinationXIn,destinationYIn];
-    this.AttackPos = [0,0];
-    this.speed=5;
-    this.direction= 0; // up=0 // down=1 // left=2  //right=3
+Object.freeze(direction);
+
+// monster class
+function Monster(destinationXIn, destinationYIn, PositionX, PositionY , GridObjectTypeIn) {
+    this.position = {              // Holds current position of mob
+        x: PositionX,
+        y: PositionY
+    };
+    this.destination = {           // msh 3arf asmeh eh bsra7a >_>
+        x:destinationXIn,
+        y:destinationYIn
+    }; 
     
-    this.scatter=false;
+    this.AttackPos = {              // Defines the position which the monster is heading to.
+        x:0,
+        y:0
+    };
+    this.speed = 5;                 // not used yet.
     
+    this.direction = direction.UP;
+
+    this.scatter = false;
+    
+    this.GridObjectType = GridObjectTypeIn;
+    
+    levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.GridObjectType;
+
+
 }
 
 
+// Monster movement
+Object.defineProperty(Monster.prototype, "move", {
 
-Object.defineProperty(Monster.prototype,"move",
-        {
-    
     value: function () {
         var that = this;
-        console.log(this);
-        setInterval(function(){
-            
-            levelOneGrid[ MapGrid2dTo1d(that.position[0],that.position[1]) ] = 3; // remove current mob and place a coin
+        setInterval(function () {
 
-            var dx = [ 0, 0, -1, 1 ], dy = [ -1, 1, 0, 0 ]; // all possible path:  up=0  down=1  left=2 right=3
+            levelOneGrid[MapGrid2dTo1d(that.position.x, that.position.y)] = 3; // remove current mob and place a coin
+
+            var dx = [0, 0, -1, 1],
+                dy = [-1, 1, 0, 0]; // all possible path:  up=0  down=1  left=2 right=3
 
             // attack mode
-            that.AttackPos[0] = MapGrid1dTo2d(PacmanPos)[1] + that.destination[0]; // pos to attack // pac man
-            that.AttackPos[1] = MapGrid1dTo2d(PacmanPos)[0] + that.destination[1]; // pos to attack // pac man
-            console.log(that.AttackPos[0],that.AttackPos[1]);
+            that.AttackPos.x = MapGrid1dTo2d(PacmanPos).xPos + that.destination.x; // pos to attack // pac man
+            that.AttackPos.y = MapGrid1dTo2d(PacmanPos).yPos + that.destination.y; // pos to attack // pac man
+            console.log(that.AttackPos.x, that.AttackPos.y);
 
-    var allDistance=[0,0,0,0]; // down top left right
-	for (var i = 0; i < 4; i++)
-	{
-        
-        if ( levelOneGrid[ MapGrid2dTo1d ( (that.position[0]+dx[i] ),(that.position[1] + dy[i]) ) ] == 1)
-			 allDistance[i] = 115000000;
-		/*else if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '_'&&ghost_isLife[ghostNum - 1])
-			arr[i] = 4000000;*/
-		else
-			allDistance[i] = GetDistance (( that.position[0]+dx[i] ),(that.position[1] + dy[i]) ,
-                                         (  that.AttackPos[0]      ),(that.AttackPos[1]        )  );
-	console.log(( that.position[0]+dx[i] )+", "+(that.position[1] + dy[i]))
-    }
-   // console.log("before dirctions");
-    //console.log(allDistance[0],allDistance[1],allDistance[2],allDistance[3]);
-     if ( that.direction == 0  )
-            allDistance[1] = 10000000;
-        
-     if ( that.direction == 1  )
-            allDistance[0] = 10000000;
-            
-     if ( that.direction == 2  )
-            allDistance[3] = 10000000;
-            
-     if ( that.direction == 3  )
-            allDistance[2] = 10000000;
-    
-    console.log("after dirctions");
-    console.log(allDistance[0],allDistance[1],allDistance[2],allDistance[3]);        
-    
-    var minDistance = Math.min.apply( null, allDistance );
-    console.log(minDistance);
-    if(allDistance[0] == minDistance){  // move up
-            that.direction=0;
-            that.position[1]--;
-        console.log("UP");
+            var allDistance = [0, 0, 0, 0]; // down top left right. Holds eculidian distance between 
+            //all 4 possible paths and the target
 
-        }
-            
-     else if(allDistance[1] == minDistance){ // move down
-            that.direction=1;
-            that.position[1]++;
-                 console.log("DOWN");
+            for (var i = 0; i < 4; i++) {
 
-        }
-            
-     else if(allDistance[2] == minDistance){ // move left
-            that.direction=2;
-            that.position[0]--;
-                 console.log("LEFT");
+                if (levelOneGrid[MapGrid2dTo1d((that.position.x + dx[i]), (that.position.y + dy[i]))] == 1)
+                    allDistance[i] = 115000000;
+                /*else if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '_'&&ghost_isLife[ghostNum - 1])
+                	arr[i] = 4000000;*/
+                else
+                    allDistance[i] = GetDistance((that.position.x + dx[i]), (that.position.y + dy[i]),
+                        (that.AttackPos.x), (that.AttackPos.y));
+            }
 
-        }
-            
-     else if(allDistance[3] == minDistance){ // move right
-            that.direction=3
-            that.position[0]++;
-                 console.log("RIGHT");
+            if (that.direction == direction.UP)
+                allDistance[direction.DOWN] = 10000000;
 
-        }
-        
-        
-            levelOneGrid[ MapGrid2dTo1d(that.position[0],that.position[1]) ] = 10;
+            if (that.direction == direction.DOWN)
+                allDistance[direction.UP] = 10000000;
+
+            if (that.direction == direction.LEFT)
+                allDistance[direction.RIGHT] = 10000000;
+
+            if (that.direction == direction.RIGHT)
+                allDistance[direction.LEFT] = 10000000;
+
+            var minDistance = Math.min.apply(null, allDistance);
+
+            if (allDistance[0] == minDistance) { // move up
+                that.direction = 0;
+                that.position.y--;
+
+            } else if (allDistance[1] == minDistance) { // move down
+                that.direction = 1;
+                that.position.y++;
+
+            } else if (allDistance[2] == minDistance) { // move left
+                that.direction = 2;
+                that.position.x--;
+
+            } else if (allDistance[3] == minDistance) { // move right
+                that.direction = 3
+                that.position.x++;
+
+            }
+
+            levelOneGrid[MapGrid2dTo1d(that.position.x, that.position.y)] = that.GridObjectType;
             drawGrid(levelOneGrid);
-            
-        },1000)
-        
+
+        }, 1000)
+
     },
-    enumerable:false,
-    writable:false,
-    configurable:false
-}
-                     )
+    enumerable: false,
+    writable: false,
+    configurable: false
+})
 
 
-function GetDistance (x1,y1,x2,y2){
-    
-     return ( Math.pow(x1-x2,2) + Math.pow (y1-y2,2) );  
- 
+function GetDistance(x1, y1, x2, y2) {
+
+    return (Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+
 }
 
 
@@ -396,12 +421,6 @@ void ghostmoving(ghostStruct& gost, Sprite& ghostSprite, double Stepx, double St
 */
 
 
-var blinky=new Monster(0,0,6,6);
-levelOneGrid[MapGrid2dTo1d(6,6)] = 10;
+var blinky = new Monster(0, 0, 6, 6,gridObjects.BLINKY);
 blinky.move();
 drawGrid(levelOneGrid);
-
-
-
-
-
