@@ -1,9 +1,7 @@
-var PlayerScore = 0; //player scoring tracker
+var PlayerScore = 0; //player score tracker
 var PacmanPos = 22; //pacman index in array
 var mapWidth = 21;
 var noOflives=3;
-
-
 
 
 var movementDirection = {
@@ -14,7 +12,7 @@ var movementDirection = {
     moveDown: 4,
 
 };
-// objects holds names for various grid objects.
+// objects holds names for various grid objects. // just testing git
 var gridObjects = {
     POWERUP:0,
     WALL: 1,
@@ -54,8 +52,7 @@ var keyboard = {
 // check if it's better as 2d array or 1d array
 // ghost // power up 
 // grid is 21 x 16
-var levelOneGrid = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-
+var levelOneGrid = [  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
                     , 1, 2, 3, 3, 3, 3, 3, 3, 3, 1, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1
                     , 1, 3, 1, 1, 3, 1, 1, 1, 3, 3, 3, 3, 3, 1, 1, 1, 3, 1, 1, 3, 1
                     , 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 1
@@ -403,7 +400,7 @@ function Monster(destinationXIn, destinationYIn, PositionX, PositionY, GridObjec
     this.lastGridObject = gridObjects.EMPTY;
 }
 
-Monster.mode = mobMode.SCATTER; // default behaviur for mobs.
+Monster.mode = mobMode.ATTACK; // default behaviur for mobs.
 
 
 // Monster movement
