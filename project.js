@@ -2,7 +2,7 @@ var PlayerScore = 0; //player scoring tracker
 var PacmanPos = 22; //pacman index in array
 var mapWidth = 21;
 var noOflives=3;
-
+//ahmed
 
 
 
