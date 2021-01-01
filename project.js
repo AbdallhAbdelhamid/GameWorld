@@ -76,7 +76,7 @@ function drawGrid(gridArrIn) {
     }
 }
 
-drawGrid(levelOneGrid);
+
 var lastDirection = 0; //1= last direction was right, 2= last direction was left, 3= last direction was up, , 4= last direction was down
 
 
@@ -459,6 +459,7 @@ Object.defineProperty(Monster, "switchMovement", {
         setInterval(function () {
             if (Monster.mode == mobMode.ATTACK) {
                 Monster.mode = mobMode.SCATTER;
+                
             } else if (Monster.mode == mobMode.SCATTER) {
                 Monster.mode = mobMode.ATTACK;
             }
