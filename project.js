@@ -617,9 +617,9 @@ setTimeout(function () {
 
 setInterval(function () { // GAME LOOP 
 
-//    mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.lastGridObject]));
-//    mobArr.forEach(mob => mob.move());
-//    mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.gridObjectType]))
+    mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.lastGridObject]));
+    mobArr.forEach(mob => mob.move());
+    mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.gridObjectType]))
 
    //  drawGrid(levelOneGrid);
 }, 500);
