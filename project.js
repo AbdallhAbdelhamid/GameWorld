@@ -16,14 +16,29 @@ var movementDirection = {
 };
 // objects holds names for various grid objects.
 var gridObjects = {
+    POWERUP:0,
     WALL: 1,
     PACMAN: 2,
     COIN: 3,
     EMPTY: 4,
-    BLINKY: 10,
-    CLYDE: 11,
-    INKY: 12
+    BLINKY: 5,
+    CLYDE: 6,
+    INKY: 7
 };
+
+var gridObjectsClass = [
+    'powerup',
+    'wall',
+    'pacman',
+    'coin',
+    'empty',
+    'blinkymob',
+    'clydemob',
+    'inkymob'
+];
+
+
+
 Object.freeze(gridObjects);
 
 var keyboard = {
@@ -38,22 +53,24 @@ var keyboard = {
 //where numbers inside it are as follown: 1=wall object, 2=Pacman object, 3=coin object, 4=empty object
 // check if it's better as 2d array or 1d array
 // ghost // power up 
+// grid is 21 x 16
 var levelOneGrid = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-    , 1, 2, 3, 3, 3, 3, 3, 3, 3, 1, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1
-    , 1, 3, 1, 1, 3, 1, 1, 1, 3, 3, 3, 3, 3, 1, 1, 1, 3, 1, 1, 3, 1
-    , 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 1
-    , 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1
-    , 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1
-    , 1, 3, 3, 3, 3, 3, 3, 1, 1, 3, 3, 3, 1, 1, 3, 3, 3, 3, 3, 3, 1
-    , 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1
-    , 1, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1,
-    1, 3, 1, 3, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 3, 1, 3, 1, 1,
-    3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 1, 1, 3,
-    1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 3
-    , 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1
-    , 3, 1, 1, 1, 1, 1, 1, 3, 1, 3, 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 3
-    , 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1, 1, 3, 3, 3, 3, 3, 1
-    , 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+
+                    , 1, 2, 3, 3, 3, 3, 3, 3, 3, 1, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1
+                    , 1, 3, 1, 1, 3, 1, 1, 1, 3, 3, 3, 3, 3, 1, 1, 1, 3, 1, 1, 3, 1
+                    , 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 1
+                    , 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1
+                    , 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1
+                    , 1, 3, 3, 3, 3, 3, 3, 1, 1, 3, 3, 3, 1, 1, 3, 3, 3, 3, 3, 3, 1
+                    , 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1
+                    , 1, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1
+                    , 1, 3, 1, 3, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 3, 1, 3, 1
+                    , 1, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 1
+                    , 1, 3, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1
+                    , 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1
+                    , 1, 3, 1, 1, 1, 1, 1, 1, 3, 1, 3, 1, 3, 1, 1, 3, 1, 1, 1, 3, 1
+                    , 1, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1, 1, 3, 3, 3, 3, 3, 1
+                    , 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 
 // maps from 2d to 1d
 function MapGrid2dTo1d(x, y) {
@@ -89,6 +106,7 @@ function drawGrid(gridArrIn) {
     }
 }
 
+
 function drawLives(LIVES) {
     document.getElementById("life").innerHTML = "";
     for (var i = 0; i < LIVES; i++) {
@@ -100,12 +118,6 @@ drawLives(3);
 // if(PacmanPos==Monsterpostion1||Monsterpostion2||Monsterpostion3||Monsterpostion4)
 // {
 //     noOflives--;
-
-//     drawLives(noOflives)
-        //if(noOflives==0){Gameover()}
-// }
-
-
 
 //*****************************************************class pacman*******************************************************************
 
@@ -317,9 +329,11 @@ PacmanClass.prototype.MoveUp2 = function () {
 function ScoringTracker() {
     document.getElementById("score").innerHTML = "Score: " + PlayerScore;
     // if (PlayerScore ==158) { setInterval(GameWon,10); }
+
     if (PlayerScore == 158) { GameWon(); }//158
 
 }
+
 function GameWon() {
     drawGrid(levelOneGrid);
     $("#score").html("Congratulations You Have Won").effect("shake");
@@ -360,7 +374,7 @@ var mobMode = { // defines monsters hehaviur
 Object.freeze(direction);
 
 // monster class
-function Monster(destinationXIn, destinationYIn, PositionX, PositionY, GridObjectTypeIn) {
+function Monster(destinationXIn, destinationYIn, PositionX, PositionY, GridObjectTypeIn, GridObjectClassIn) {
     this.position = { // Holds current position of mob
         x: PositionX,
         y: PositionY
@@ -381,9 +395,10 @@ function Monster(destinationXIn, destinationYIn, PositionX, PositionY, GridObjec
 
     this.scatter = false;
 
-    this.GridObjectType = GridObjectTypeIn;
+    this.gridObjectType = GridObjectTypeIn;
+    this.gridObjectClass = GridObjectClassIn;
 
-    levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.GridObjectType;
+    levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.gridObjectType;
 
     this.lastGridObject = gridObjects.EMPTY;
 }
@@ -394,45 +409,48 @@ Monster.mode = mobMode.SCATTER; // default behaviur for mobs.
 // Monster movement
 Object.defineProperty(Monster.prototype, "move", {
 
-    value: function () {
-        if (this.lastGridObject == gridObjects.COIN || this.lastGridObject == gridObjects.EMPTY)
-            levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.lastGridObject; // remove current mob and place a coin
 
-        var dx = [0, 0, -1, 1],
-            dy = [-1, 1, 0, 0]; // all possible path:  up=0  down=1  left=2 right=3
+        value: function () {
+            if (this.lastGridObject == gridObjects.COIN || this.lastGridObject == gridObjects.EMPTY)
+                levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.lastGridObject; // remove current mob and place the old obj
+            
+            var dx = [0, 0, -1, 1],
+                dy = [-1, 1, 0, 0]; // all possible path:  up=0  down=1  left=2 right=3
 
-        // attack mode
-        if (Monster.mode == mobMode.ATTACK) {
-            this.AttackPos.x = MapGrid1dTo2d(PacmanPos).xPos + this.destination.x; // pos to attack // pac man
-            this.AttackPos.y = MapGrid1dTo2d(PacmanPos).yPos + this.destination.y; // pos to attack // pac man
-        }
-        // scatter mode
-        else if (Monster.mode == mobMode.SCATTER && this.GridObjectType == gridObjects.BLINKY) {
-            this.AttackPos.x = 3; //  blinky scatters to this x pos
-            this.AttackPos.y = 3; //  blinky scatters to this y pos
+            // attack mode
+            if (Monster.mode == mobMode.ATTACK) {
+                this.AttackPos.x = MapGrid1dTo2d(PacmanPos).xPos + this.destination.x; // pos to attack // pac man
+                this.AttackPos.y = MapGrid1dTo2d(PacmanPos).yPos + this.destination.y; // pos to attack // pac man
+            }
+            // scatter mode
+            else if (Monster.mode == mobMode.SCATTER && this.gridObjectType == gridObjects.BLINKY) {
+                this.AttackPos.x = 3; //  blinky scatters to this x pos
+                this.AttackPos.y = 3; //  blinky scatters to this y pos
 
-        } else if (Monster.mode == mobMode.SCATTER && this.GridObjectType == gridObjects.INKY) {
-            this.AttackPos.x = 18; // blinky scatters to this x pos
-            this.AttackPos.y = 4; // blinky scatters to this y pos
+            } else if (Monster.mode == mobMode.SCATTER && this.gridObjectType == gridObjects.INKY) {
+                this.AttackPos.x = 18; // blinky scatters to this x pos
+                this.AttackPos.y = 4; // blinky scatters to this y pos
 
-        } else if (Monster.mode == mobMode.SCATTER && this.GridObjectType == gridObjects.CLYDE) {
-            this.AttackPos.x = 18; // blinky scatters to this x pos
-            this.AttackPos.y = 8; // blinky scatters to this y pos
-        }
+            } else if (Monster.mode == mobMode.SCATTER && this.gridObjectType == gridObjects.CLYDE) {
+                this.AttackPos.x = 18; // blinky scatters to this x pos
+                this.AttackPos.y = 8; // blinky scatters to this y pos
+            }
 
         var allDistance = [0, 0, 0, 0]; // down top left right. Holds eculidian distance between 
         //all 4 possible paths and the target
 
         for (var i = 0; i < 4; i++) {
 
-            if (levelOneGrid[MapGrid2dTo1d((this.position.x + dx[i]), (this.position.y + dy[i]))] == gridObjects.WALL)
-                allDistance[i] = 115000000;
-            /*else if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '_'&&ghost_isLife[ghostNum - 1])
-                arr[i] = 4000000;*/
-            else
-                allDistance[i] = GetDistance((this.position.x + dx[i]), (this.position.y + dy[i]),
-                    (this.AttackPos.x), (this.AttackPos.y));
-        }
+
+                if (levelOneGrid[MapGrid2dTo1d((this.position.x + dx[i]), (this.position.y + dy[i]))] == gridObjects.WALL)
+                    allDistance[i] = 115000000;
+                /*else if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '_'&&ghost_isLife[ghostNum - 1])
+                	arr[i] = 4000000;*/
+                else
+                    allDistance[i] = GetDistance((this.position.x + dx[i]), (this.position.y + dy[i]),
+                        (this.AttackPos.x), (this.AttackPos.y));
+            }
+
 
         if (this.direction == direction.UP)
             allDistance[direction.DOWN] = 10000000;
@@ -464,14 +482,17 @@ Object.defineProperty(Monster.prototype, "move", {
             this.direction = direction.RIGHT
             this.position.x++;
 
-        }
+            }
+            if (levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y) ]== gridObjects.COIN ||
+                levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] == gridObjects.EMPTY) 
+                this.lastGridObject = levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)];
+                             
+            levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.gridObjectType; // Put mob in new pos
+        },
+        enumerable: false,
+        writable: false,
+        configurable: false
 
-        this.lastGridObject = levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)];
-        levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.GridObjectType;
-    },
-    enumerable: false,
-    writable: false,
-    configurable: false
 
 }
 
@@ -483,6 +504,7 @@ Object.defineProperty(Monster, "switchMovement", {
         setInterval(function () {
             if (Monster.mode == mobMode.ATTACK) {
                 Monster.mode = mobMode.SCATTER;
+
             } else if (Monster.mode == mobMode.SCATTER) {
                 Monster.mode = mobMode.ATTACK;
             }
@@ -593,9 +615,19 @@ void ghostmoving(ghostStruct& gost, Sprite& ghostSprite, double Stepx, double St
 
 */
 
-var blinky = new Monster(2, 2, 10, 4, gridObjects.BLINKY);
-var clyde = new Monster(7, 0, 9, 6, gridObjects.CLYDE);
-var inky = new Monster(-5, 3, 11, 6, gridObjects.INKY);
+
+function DrawObjectOnGrid(xPos, yPos,gridObjectClass) {
+    var gridIndex = MapGrid2dTo1d(xPos, yPos);
+    $("#Map").children().eq(gridIndex).removeClass().css({
+        'transform': 'rotate(0deg)'}).addClass(gridObjectClass);
+}
+
+
+
+var blinky = new Monster(2, 2, 10, 4, gridObjects.BLINKY, gridObjectsClass[gridObjects.BLINKY]);
+var clyde = new Monster(7, 0, 9, 6, gridObjects.CLYDE, gridObjectsClass[gridObjects.CLYDE]);
+var inky = new Monster(-5, 3, 11, 6, gridObjects.INKY, gridObjectsClass[gridObjects.INKY]);
+
 Monster.switchMovement();
 
 var mobArr = [blinky];
@@ -610,27 +642,19 @@ setTimeout(function () {
 
 
 
-// setInterval(function () { // GAME LOOP 
-
-//     mobArr.forEach(mob => mob.move());
-
-//     drawGrid(levelOneGrid);
-// }, 500);
  document.onkeydown = checkKey; //to listen for intial user event
  drawGrid(levelOneGrid);
 var pacmanObj = new PacmanClass();
 
+setInterval(function () { // GAME LOOP 
+    mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.lastGridObject]));
+    mobArr.forEach(mob => mob.move());
+    mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.gridObjectType]))
 
 
-
-
-
-
-
-
-
-
-
+   //  drawGrid(levelOneGrid);
+}, 500);
+=======
 
 
 
