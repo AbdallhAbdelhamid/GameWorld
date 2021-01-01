@@ -592,7 +592,8 @@ void ghostmoving(ghostStruct& gost, Sprite& ghostSprite, double Stepx, double St
 
 function DrawObjectOnGrid(xPos, yPos,gridObjectClass) {
     var gridIndex = MapGrid2dTo1d(xPos, yPos);
-    $("#Map").children().eq(gridIndex).removeClass().addClass(gridObjectClass);
+    $("#Map").children().eq(gridIndex).removeClass().css({
+        'transform': 'rotate(0deg)'}).addClass(gridObjectClass);
 }
 
 
@@ -617,9 +618,15 @@ setTimeout(function () {
 
 setInterval(function () { // GAME LOOP 
 
+<<<<<<< HEAD
     mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.lastGridObject]));
     mobArr.forEach(mob => mob.move());
     mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.gridObjectType]))
+=======
+   mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.lastGridObject]));
+   mobArr.forEach(mob => mob.move());
+   mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.gridObjectType]))
+>>>>>>> cc528367fa740d9a1e0681758c467ec90991d42b
 
    //  drawGrid(levelOneGrid);
 }, 500);
