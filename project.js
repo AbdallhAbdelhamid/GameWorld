@@ -1,6 +1,19 @@
 var PlayerScore = 0; //player scoring tracker
 var PacmanPos = 22; //pacman index in array
+var mapWidth = 21;
+var noOflives=3;
 
+
+
+
+var movementDirection = {
+    PacManStartMove:0,
+    moveRight: 1,
+    moveLeft: 2,
+    moveUp : 3,
+    moveDown: 4,
+
+};
 // objects holds names for various grid objects.
 var gridObjects = {
     WALL: 1,
@@ -26,35 +39,35 @@ var keyboard = {
 // check if it's better as 2d array or 1d array
 // ghost // power up 
 var levelOneGrid = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-                    , 1, 2, 3, 3, 3, 3, 3, 3, 3, 1, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1
-                    , 1, 3, 1, 1, 3, 1, 1, 1, 3, 3, 3, 3, 3, 1, 1, 1, 3, 1, 1, 3, 1
-                    , 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 1
-                    , 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1
-                    , 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1
-                    , 1, 3, 3, 3, 3, 3, 3, 1, 1, 3, 3, 3, 1, 1, 3, 3, 3, 3, 3, 3, 1
-                    , 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1
-                    , 1, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1,
-                    1, 3, 1, 3, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 3, 1, 3, 1, 1,
-                    3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 1, 1, 3,
-                    1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 3
-                    , 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1
-                    , 3, 1, 1, 1, 1, 1, 1, 3, 1, 3, 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 3
-                    , 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1, 1, 3, 3, 3, 3, 3, 1
-                    , 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
+    , 1, 2, 3, 3, 3, 3, 3, 3, 3, 1, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1
+    , 1, 3, 1, 1, 3, 1, 1, 1, 3, 3, 3, 3, 3, 1, 1, 1, 3, 1, 1, 3, 1
+    , 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 1
+    , 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1
+    , 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1
+    , 1, 3, 3, 3, 3, 3, 3, 1, 1, 3, 3, 3, 1, 1, 3, 3, 3, 3, 3, 3, 1
+    , 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1
+    , 1, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1,
+    1, 3, 1, 3, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 3, 1, 3, 1, 1,
+    3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 1, 1, 3,
+    1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 3
+    , 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1
+    , 3, 1, 1, 1, 1, 1, 1, 3, 1, 3, 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 3
+    , 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1, 1, 3, 3, 3, 3, 3, 1
+    , 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 
 // maps from 2d to 1d
 function MapGrid2dTo1d(x, y) {
     // TODO:
     // RENAME the function
-    return y * 21 + x;
+    return y * mapWidth + x;
 }
 
 // maps from 1d to 2d
 function MapGrid1dTo2d(index) {
     //   return [index % 21, parseInt(index / 21)];
     return {
-        xPos: index % 21,
-        yPos: parseInt(index / 21)
+        xPos: index % mapWidth,
+        yPos: parseInt(index / mapWidth)
     };
 }
 
@@ -76,22 +89,23 @@ function drawGrid(gridArrIn) {
     }
 }
 
-drawGrid(levelOneGrid);
-var lastDirection = 0; //1= last direction was right, 2= last direction was left, 3= last direction was up, , 4= last direction was down
+function drawLives(LIVES) {
+    document.getElementById("life").innerHTML = "";
+    for (var i = 0; i < LIVES; i++) {
 
-
-function drawLives(numberoflife)
-    {
-        document.getElementById("life").innerHTML += "";
-        for (var i=0;i<numberoflife;i++)
-        {
-            
-        document.getElementById("life").innerHTML+="<div class='pacman'></div>"
-        }
-
+        document.getElementById("life").innerHTML += "<div  class='livediv'></div>"
     }
-    
- drawLives(3);
+}
+drawLives(3);
+// if(PacmanPos==Monsterpostion1||Monsterpostion2||Monsterpostion3||Monsterpostion4)
+// {
+//     noOflives--;
+
+//     drawLives(noOflives)
+        //if(noOflives==0){Gameover()}
+// }
+
+
 
 //*****************************************************class pacman*******************************************************************
 
@@ -99,21 +113,20 @@ var PacmanClass = function () {
     this.lastDirection = 0; //1= last direction was right, 2= last direction was left, 3= last direction was up, , 4= last direction was down
     this.timer;
 }
-var pacmanObj = new PacmanClass();
 
 function checkKey(e) {
     e = window.event;
 
-    if ((e.keyCode == keyboard.ARROWUP) && (pacmanObj.lastDirection != 3)) //key up
+    if ((e.keyCode == keyboard.ARROWUP) && (pacmanObj.lastDirection != movementDirection.moveUp)) //key up
     {
         pacmanObj.PacmanMovementCheck(e)
-    } else if ((e.keyCode == keyboard.ARROWDOWN) && (pacmanObj.lastDirection != 4)) //key down
+    } else if ((e.keyCode == keyboard.ARROWDOWN) && (pacmanObj.lastDirection != movementDirection.moveDown)) //key down
     {
         pacmanObj.PacmanMovementCheck(e)
-    } else if ((e.keyCode == keyboard.ARROWLEFT) && (pacmanObj.lastDirection != 2)) //key left  
+    } else if ((e.keyCode == keyboard.ARROWLEFT) && (pacmanObj.lastDirection != movementDirection.moveLeft)) //key left  
     {
         pacmanObj.PacmanMovementCheck(e)
-    } else if ((e.keyCode == keyboard.ARROWRIGHT) && (pacmanObj.lastDirection != 1)) //key right 
+    } else if ((e.keyCode == keyboard.ARROWRIGHT) && (pacmanObj.lastDirection != movementDirection.moveRight)) //key right 
     {
         pacmanObj.PacmanMovementCheck(e)
     }
@@ -122,7 +135,6 @@ function checkKey(e) {
 // TO DO : add enums for directions // 
 
 
-document.onkeydown = checkKey; //to listen for intial user event
 //function for pacman right movement
 //function to check pacman movements
 /*function CheckPacmanNextPostion() {
@@ -138,44 +150,45 @@ PacmanClass.prototype.PacmanMovementCheck = function (e) {
     //1= last direction was right, 2= last direction was left, 3= last direction was up, , 4= last direction was down
     if ((e.keyCode == keyboard.ARROWUP)) //key up
     {
-        if (pacmanObj.lastDirection == 0) {
-            pacmanObj.lastDirection = 3;
+        if (pacmanObj.lastDirection == movementDirection.PacManStartMove) {//if pacman position is changed in another map
+            pacmanObj.lastDirection = movementDirection.moveUp;
             pacmanObj.timer = setTimeout(pacmanObj.MoveUp2, 200)
-        } else if (levelOneGrid[PacmanPos - 21] != 1) {
-            pacmanObj.lastDirection = 3;
+        } else if (levelOneGrid[PacmanPos - mapWidth] != gridObjects.WALL) {
+            pacmanObj.lastDirection = movementDirection.moveUp;
             clearTimeout(pacmanObj.timer);
             pacmanObj.timer = setTimeout(pacmanObj.MoveUp2, 10)
         } //else CallTheLastAction();
 
     } else if ((e.keyCode == keyboard.ARROWDOWN)) //key down
     {
-        if (pacmanObj.lastDirection == 0) {
-            pacmanObj.lastDirection = 4;
+        if (pacmanObj.lastDirection == movementDirection.PacManStartMove) {
+            pacmanObj.lastDirection = movementDirection.moveDown;
             pacmanObj.timer = setTimeout(pacmanObj.MoveDown2, 200)
-        } else if (levelOneGrid[PacmanPos + 21] != 1) {
-            pacmanObj.lastDirection = 4;
+        } else if (levelOneGrid[PacmanPos + mapWidth] != gridObjects.WALL) {
+            pacmanObj.lastDirection = movementDirection.moveDown;
             clearTimeout(pacmanObj.timer);
             pacmanObj.timer = setTimeout(pacmanObj.MoveDown2, 10)
         } //else CallTheLastAction();
 
     } else if ((e.keyCode == keyboard.ARROWLEFT)) //key left  
     {
-        if (pacmanObj.lastDirection == 0) {
-            pacmanObj.lastDirection = 2;
+        if (pacmanObj.lastDirection == movementDirection.PacManStartMove) {
+            pacmanObj.lastDirection = movementDirection.moveLeft;
             pacmanObj.timer = setTimeout(pacmanObj.MoveLeft2, 200)
-        } else if (levelOneGrid[PacmanPos - 1] != 1) {
-            pacmanObj.lastDirection = 2;
+        } else if (levelOneGrid[PacmanPos - 1] != gridObjects.WALL) {
+            pacmanObj.lastDirection = movementDirection.moveLeft;
             clearTimeout(pacmanObj.timer);
             pacmanObj.timer = setTimeout(pacmanObj.MoveLeft2, 10)
         } //else CallTheLastAction();
 
     } else if ((e.keyCode == keyboard.ARROWRIGHT)) //key right // 1 : last direction was right
     {
-        if (pacmanObj.lastDirection == 0) {
-            pacmanObj.lastDirection = 1;
+        if (pacmanObj.lastDirection == movementDirection.PacManStartMove) {
+            pacmanObj.lastDirection = movementDirection.moveRight;
             pacmanObj.timer = setTimeout(pacmanObj.MoveRight2, 200)
-        } else if (levelOneGrid[PacmanPos + 1] != 1) {
-            pacmanObj.lastDirection = 1;
+        } else if (levelOneGrid[PacmanPos + 1] != gridObjects.WALL) {
+            pacmanObj.lastDirection = movementDirection.moveRight;
+
             clearTimeout(pacmanObj.timer);
             pacmanObj.timer = setTimeout(pacmanObj.MoveRight2, 10)
         } //else CallTheLastAction();
@@ -188,22 +201,22 @@ PacmanClass.prototype.MoveRight2 = function () {
     // TODO: function get next move for pac-man
     //1=wall object, 2=Pacman object, 3=coin object, 4=empty object
     var _NextPos = levelOneGrid[PacmanPos + 1]
-    if (_NextPos == 1) {
+    if (_NextPos == gridObjects.WALL) {
         //$(".pacman").css('background-image', "url('./pic/new2.png')")
         return 0;
-    } else if (_NextPos == 3) {
+    } else if (_NextPos == gridObjects.COIN) {
         PlayerScore++; //increase score
         ScoringTracker(); //call score function
-        levelOneGrid[PacmanPos++] = 4; //replace to empty
-        levelOneGrid[PacmanPos] = 2;
+        levelOneGrid[PacmanPos++] = gridObjects.EMPTY; //replace to empty
+        levelOneGrid[PacmanPos] = gridObjects.PACMAN;
         $(".pacman").next().removeClass('coin').addClass('pacman').css({
             'transform': 'rotate(0deg)'
         });
         $(".pacman").eq(0).removeClass('pacman').addClass('empty');
         //$(".pacman").eq(0).removeClass('pacman').css('background-image', "").addClass('empty');
-    } else if (_NextPos == 4) {
-        levelOneGrid[PacmanPos++] = 4;
-        levelOneGrid[PacmanPos] = 2;
+    } else if (_NextPos == gridObjects.EMPTY) {
+        levelOneGrid[PacmanPos++] = gridObjects.EMPTY;
+        levelOneGrid[PacmanPos] = gridObjects.PACMAN;
         $(".pacman").next().removeClass('empty').addClass('pacman').css({
             'transform': 'rotate(0deg)'
         });
@@ -216,22 +229,22 @@ PacmanClass.prototype.MoveRight2 = function () {
 PacmanClass.prototype.MoveLeft2 = function () {
     //1=wall object, 2=Pacman object, 3=coin object, 4=empty object
     var _PrevPos = levelOneGrid[PacmanPos - 1]
-    if (_PrevPos == 1) {
+    if (_PrevPos == gridObjects.WALL) {
         //$(".pacman").css('background-image', "url('./pic/new2.png')")
         return 0;
-    } else if (_PrevPos == 3) {
+    } else if (_PrevPos == gridObjects.COIN) {
         PlayerScore++; //increase score
         ScoringTracker(); //call score function
-        levelOneGrid[PacmanPos--] = 4; //replace to empty
-        levelOneGrid[PacmanPos] = 2;
+        levelOneGrid[PacmanPos--] = gridObjects.EMPTY; //replace to empty
+        levelOneGrid[PacmanPos] = gridObjects.PACMAN;
         $(".pacman").prev().removeClass('coin').addClass('pacman').css({
             'transform': 'rotate(180deg)'
         });
         $(".pacman").eq(1).removeClass('pacman').addClass('empty');
         //$(".pacman").eq(1).removeClass('pacman').css('background-image', "").addClass('empty');
-    } else if (_PrevPos == 4) {
-        levelOneGrid[PacmanPos--] = 4;
-        levelOneGrid[PacmanPos] = 2;
+    } else if (_PrevPos == gridObjects.EMPTY) {
+        levelOneGrid[PacmanPos--] =gridObjects.EMPTY ;
+        levelOneGrid[PacmanPos] = gridObjects.PACMAN;
         $(".pacman").prev().removeClass('empty').addClass('pacman').css({
             'transform': 'rotate(180deg)'
         });
@@ -243,25 +256,25 @@ PacmanClass.prototype.MoveLeft2 = function () {
 
 PacmanClass.prototype.MoveDown2 = function () {
     //1=wall object, 2=Pacman object, 3=coin object, 4=empty object
-    var _NextDownPos = levelOneGrid[PacmanPos + 21]
-    if (_NextDownPos == 1) {
+    var _NextDownPos = levelOneGrid[PacmanPos + mapWidth]
+    if (_NextDownPos == gridObjects.WALL) {
         //$(".pacman").css('background-image', "url('./pic/new2.png')")
         return 0;
-    } else if (_NextDownPos == 3) {
+    } else if (_NextDownPos == gridObjects.COIN) {
         PlayerScore++; //increase score
         ScoringTracker(); //call score function
-        levelOneGrid[PacmanPos] = 4; //replace to empty
-        levelOneGrid[PacmanPos + 21] = 2;
-        PacmanPos += 21;
+        levelOneGrid[PacmanPos] =gridObjects.EMPTY; //replace to empty
+        levelOneGrid[PacmanPos + mapWidth] = gridObjects.PACMAN;
+        PacmanPos += mapWidth;
         $("div").eq(1 + PacmanPos).removeClass('coin').addClass('pacman').css({
             'transform': 'rotate(90deg)'
         });
         $(".pacman").eq(0).removeClass('pacman').addClass('empty');
         //$(".pacman").eq(0).removeClass('pacman').css('background-image', "").addClass('empty');
-    } else if (_NextDownPos == 4) {
-        levelOneGrid[PacmanPos] = 4;
-        levelOneGrid[PacmanPos + 21] = 2;
-        PacmanPos += 21;
+    } else if (_NextDownPos == gridObjects.EMPTY) {
+        levelOneGrid[PacmanPos] = gridObjects.EMPTY;
+        levelOneGrid[PacmanPos + mapWidth] = gridObjects.PACMAN;
+        PacmanPos += mapWidth;
         $("div").eq(1 + PacmanPos).removeClass('empty').addClass('pacman').css({
             'transform': 'rotate(90deg)'
         });
@@ -273,25 +286,25 @@ PacmanClass.prototype.MoveDown2 = function () {
 
 PacmanClass.prototype.MoveUp2 = function () {
     //1=wall object, 2=Pacman object, 3=coin object, 4=empty object
-    var _NextUpPos = levelOneGrid[PacmanPos - 21]
-    if (_NextUpPos == 1) {
+    var _NextUpPos = levelOneGrid[PacmanPos - mapWidth]
+    if (_NextUpPos == gridObjects.WALL) {
         //$(".pacman").css('background-image', "url('./pic/new2.png')")
         return 0;
-    } else if (_NextUpPos == 3) {
+    } else if (_NextUpPos == gridObjects.COIN) {
         PlayerScore++; //increase score
         ScoringTracker(); //call score function
-        levelOneGrid[PacmanPos] = 4; //replace to empty
-        levelOneGrid[PacmanPos - 21] = 2;
-        PacmanPos -= 21;
+        levelOneGrid[PacmanPos] = gridObjects.EMPTY; //replace to empty
+        levelOneGrid[PacmanPos - mapWidth] = gridObjects.PACMAN;
+        PacmanPos -= mapWidth;
         $("div").eq(PacmanPos + 1).removeClass('coin').addClass('pacman').css({
             'transform': 'rotate(-90deg)'
         });
         $(".pacman").eq(1).removeClass('pacman').addClass('empty');
         //$(".pacman").eq(1).removeClass('pacman').css('background-image', "").addClass('empty');
-    } else if (_NextUpPos == 4) {
-        levelOneGrid[PacmanPos] = 4; //replace to empty
-        levelOneGrid[PacmanPos - 21] = 2;
-        PacmanPos -= 21;
+    } else if (_NextUpPos == gridObjects.EMPTY) {
+        levelOneGrid[PacmanPos] = gridObjects.EMPTY; //replace to empty
+        levelOneGrid[PacmanPos - mapWidth] = gridObjects.PACMAN;
+        PacmanPos -= mapWidth;
         $("div").eq(PacmanPos + 1).removeClass('empty').addClass('pacman').css({
             'transform': 'rotate(-90deg)'
         });
@@ -304,7 +317,7 @@ PacmanClass.prototype.MoveUp2 = function () {
 function ScoringTracker() {
     document.getElementById("score").innerHTML = "Score: " + PlayerScore;
     // if (PlayerScore ==158) { setInterval(GameWon,10); }
-    if (PlayerScore ==7) { GameWon(); }//158
+    if (PlayerScore == 158) { GameWon(); }//158
 
 }
 function GameWon() {
@@ -314,9 +327,20 @@ function GameWon() {
 };
 
 
+var audio = new Audio('./Audio/12.wav');
+// onload=function(){
 
+// audio.play();
+// }
 
+$('#play').click(function(){
 
+audio.play();
+});
+$('#pause').click(function(){
+
+	audio.pause();
+});
 
 /*********************************  Monster Class  ***************************************************/
 // enum to save directions
@@ -350,7 +374,7 @@ function Monster(destinationXIn, destinationYIn, PositionX, PositionY, GridObjec
         x: 0,
         y: 0
     };
-    
+
     this.speed = 5; // not used yet.
 
     this.direction = direction.UP;
@@ -370,86 +394,86 @@ Monster.mode = mobMode.SCATTER; // default behaviur for mobs.
 // Monster movement
 Object.defineProperty(Monster.prototype, "move", {
 
-        value: function () {
-            if (this.lastGridObject == gridObjects.COIN || this.lastGridObject == gridObjects.EMPTY)
-                levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.lastGridObject; // remove current mob and place a coin
+    value: function () {
+        if (this.lastGridObject == gridObjects.COIN || this.lastGridObject == gridObjects.EMPTY)
+            levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.lastGridObject; // remove current mob and place a coin
 
-            var dx = [0, 0, -1, 1],
-                dy = [-1, 1, 0, 0]; // all possible path:  up=0  down=1  left=2 right=3
+        var dx = [0, 0, -1, 1],
+            dy = [-1, 1, 0, 0]; // all possible path:  up=0  down=1  left=2 right=3
 
-            // attack mode
-            if (Monster.mode == mobMode.ATTACK) {
-                this.AttackPos.x = MapGrid1dTo2d(PacmanPos).xPos + this.destination.x; // pos to attack // pac man
-                this.AttackPos.y = MapGrid1dTo2d(PacmanPos).yPos + this.destination.y; // pos to attack // pac man
-            }
-            // scatter mode
-            else if (Monster.mode == mobMode.SCATTER && this.GridObjectType == gridObjects.BLINKY) {
-                this.AttackPos.x = 3; //  blinky scatters to this x pos
-                this.AttackPos.y = 3; //  blinky scatters to this y pos
+        // attack mode
+        if (Monster.mode == mobMode.ATTACK) {
+            this.AttackPos.x = MapGrid1dTo2d(PacmanPos).xPos + this.destination.x; // pos to attack // pac man
+            this.AttackPos.y = MapGrid1dTo2d(PacmanPos).yPos + this.destination.y; // pos to attack // pac man
+        }
+        // scatter mode
+        else if (Monster.mode == mobMode.SCATTER && this.GridObjectType == gridObjects.BLINKY) {
+            this.AttackPos.x = 3; //  blinky scatters to this x pos
+            this.AttackPos.y = 3; //  blinky scatters to this y pos
 
-            } else if (Monster.mode == mobMode.SCATTER && this.GridObjectType == gridObjects.INKY) {
-                this.AttackPos.x = 18; // blinky scatters to this x pos
-                this.AttackPos.y = 4; // blinky scatters to this y pos
+        } else if (Monster.mode == mobMode.SCATTER && this.GridObjectType == gridObjects.INKY) {
+            this.AttackPos.x = 18; // blinky scatters to this x pos
+            this.AttackPos.y = 4; // blinky scatters to this y pos
 
-            } else if (Monster.mode == mobMode.SCATTER && this.GridObjectType == gridObjects.CLYDE) {
-                this.AttackPos.x = 18; // blinky scatters to this x pos
-                this.AttackPos.y = 8; // blinky scatters to this y pos
-            }
+        } else if (Monster.mode == mobMode.SCATTER && this.GridObjectType == gridObjects.CLYDE) {
+            this.AttackPos.x = 18; // blinky scatters to this x pos
+            this.AttackPos.y = 8; // blinky scatters to this y pos
+        }
 
-            var allDistance = [0, 0, 0, 0]; // down top left right. Holds eculidian distance between 
-            //all 4 possible paths and the target
+        var allDistance = [0, 0, 0, 0]; // down top left right. Holds eculidian distance between 
+        //all 4 possible paths and the target
 
-            for (var i = 0; i < 4; i++) {
+        for (var i = 0; i < 4; i++) {
 
-                if (levelOneGrid[MapGrid2dTo1d((this.position.x + dx[i]), (this.position.y + dy[i]))]==gridObjects.WALL)
-                    allDistance[i] = 115000000;
-                /*else if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '_'&&ghost_isLife[ghostNum - 1])
-                	arr[i] = 4000000;*/
-                else
-                    allDistance[i] = GetDistance((this.position.x + dx[i]), (this.position.y + dy[i]),
-                        (this.AttackPos.x), (this.AttackPos.y));
-            }
+            if (levelOneGrid[MapGrid2dTo1d((this.position.x + dx[i]), (this.position.y + dy[i]))] == gridObjects.WALL)
+                allDistance[i] = 115000000;
+            /*else if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '_'&&ghost_isLife[ghostNum - 1])
+                arr[i] = 4000000;*/
+            else
+                allDistance[i] = GetDistance((this.position.x + dx[i]), (this.position.y + dy[i]),
+                    (this.AttackPos.x), (this.AttackPos.y));
+        }
 
-            if (this.direction == direction.UP)
-                allDistance[direction.DOWN] = 10000000;
+        if (this.direction == direction.UP)
+            allDistance[direction.DOWN] = 10000000;
 
-            if (this.direction == direction.DOWN)
-                allDistance[direction.UP] = 10000000;
+        if (this.direction == direction.DOWN)
+            allDistance[direction.UP] = 10000000;
 
-            if (this.direction == direction.LEFT)
-                allDistance[direction.RIGHT] = 10000000;
+        if (this.direction == direction.LEFT)
+            allDistance[direction.RIGHT] = 10000000;
 
-            if (this.direction == direction.RIGHT)
-                allDistance[direction.LEFT] = 10000000;
+        if (this.direction == direction.RIGHT)
+            allDistance[direction.LEFT] = 10000000;
 
-            var minDistance = Math.min.apply(null, allDistance);
+        var minDistance = Math.min.apply(null, allDistance);
 
-            if (allDistance[direction.UP] == minDistance) { // move up
-                this.direction = direction.UP;
-                this.position.y--;
+        if (allDistance[direction.UP] == minDistance) { // move up
+            this.direction = direction.UP;
+            this.position.y--;
 
-            } else if (allDistance[direction.DOWN] == minDistance) { // move down
-                this.direction = direction.DOWN;
-                this.position.y++;
+        } else if (allDistance[direction.DOWN] == minDistance) { // move down
+            this.direction = direction.DOWN;
+            this.position.y++;
 
-            } else if (allDistance[direction.LEFT] == minDistance) { // move left
-                this.direction = direction.LEFT;
-                this.position.x--;
+        } else if (allDistance[direction.LEFT] == minDistance) { // move left
+            this.direction = direction.LEFT;
+            this.position.x--;
 
-            } else if (allDistance[direction.RIGHT] == minDistance) { // move right
-                this.direction = direction.RIGHT
-                this.position.x++;
+        } else if (allDistance[direction.RIGHT] == minDistance) { // move right
+            this.direction = direction.RIGHT
+            this.position.x++;
 
-            }
+        }
 
-            this.lastGridObject = levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)];
-            levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.GridObjectType;
-        },
-        enumerable: false,
-        writable: false,
-        configurable: false
+        this.lastGridObject = levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)];
+        levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.GridObjectType;
+    },
+    enumerable: false,
+    writable: false,
+    configurable: false
 
-    }
+}
 
 );
 
@@ -482,88 +506,88 @@ function GetDistance(x1, y1, x2, y2) { // calculates eculudian distance between 
 int dx[] = { 0, 0, -1, 1 }, dy[] = { -1, 1, 0, 0 };
 void ghostmoving(ghostStruct& gost, Sprite& ghostSprite, double Stepx, double Stepy, int ghostNum, char usedmap[30][32], int mode)
 {
-	if (ghost_isLife[ghostNum - 1] == 0)
-	{
-		gost.Xdir = 11;
-		gost.Ydir = 9;
-		if (gost.x == 11 && gost.y == 9)
-			ghost_isLife[ghostNum - 1] = 2;
-	}
-	else if (mode == attackMode)
-	{
-		int dirctionx[] = { 0, 7, -5, 0 }, dirctiony[] = { 0, 0, 3, 3 };
-		gost.Xdir = pac.x + dirctionx[ghostNum - 1];
-		gost.Ydir = pac.y + dirctiony[ghostNum - 1];
-	}
-	else if (mode == frightMode)
-	{
-		int scared_x[] = { 1, 19, 1, 19 }, scared_y[] = { 2, 2, 20, 20 };
-		gost.Xdir = scared_x[ghostNum - 1];
-		gost.Ydir = scared_y[ghostNum - 1];
-	}
-	else //if (mode == randamMode)
-	{
-		int dirctionx[] = { 0, 7, -5, -3 }, dirctiony[] = { 0, 7, -2, 3 };
-		srand(time(NULL));
-		gost.Xdir = rand() % 30 + dirctionx[ghostNum - 1];
-		gost.Ydir = rand() % 30 + dirctiony[ghostNum - 1];
-	}
-	//up=0
-	//down=1
-	//left=2
-	//right=3
+    if (ghost_isLife[ghostNum - 1] == 0)
+    {
+        gost.Xdir = 11;
+        gost.Ydir = 9;
+        if (gost.x == 11 && gost.y == 9)
+            ghost_isLife[ghostNum - 1] = 2;
+    }
+    else if (mode == attackMode)
+    {
+        int dirctionx[] = { 0, 7, -5, 0 }, dirctiony[] = { 0, 0, 3, 3 };
+        gost.Xdir = pac.x + dirctionx[ghostNum - 1];
+        gost.Ydir = pac.y + dirctiony[ghostNum - 1];
+    }
+    else if (mode == frightMode)
+    {
+        int scared_x[] = { 1, 19, 1, 19 }, scared_y[] = { 2, 2, 20, 20 };
+        gost.Xdir = scared_x[ghostNum - 1];
+        gost.Ydir = scared_y[ghostNum - 1];
+    }
+    else //if (mode == randamMode)
+    {
+        int dirctionx[] = { 0, 7, -5, -3 }, dirctiony[] = { 0, 7, -2, 3 };
+        srand(time(NULL));
+        gost.Xdir = rand() % 30 + dirctionx[ghostNum - 1];
+        gost.Ydir = rand() % 30 + dirctiony[ghostNum - 1];
+    }
+    //up=0
+    //down=1
+    //left=2
+    //right=3
 
-	long long arr[5];
-	for (int i = 0; i < 4; i++)
-	{
-		if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '#')
-			arr[i] = 100000000;
-		else if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '*'&&ghost_isLife[ghostNum - 1])
-			arr[i] = 5000000;
-		else if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '_'&&ghost_isLife[ghostNum - 1])
-			arr[i] = 4000000;
-		else
-			arr[i] = dist(gost.Xdir, gost.Ydir, gost.x + dx[i], gost.y + dy[i]);
-	}
+    long long arr[5];
+    for (int i = 0; i < 4; i++)
+    {
+        if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '#')
+            arr[i] = 100000000;
+        else if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '*'&&ghost_isLife[ghostNum - 1])
+            arr[i] = 5000000;
+        else if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '_'&&ghost_isLife[ghostNum - 1])
+            arr[i] = 4000000;
+        else
+            arr[i] = dist(gost.Xdir, gost.Ydir, gost.x + dx[i], gost.y + dy[i]);
+    }
 
-	if (!(mode == frightMode&&currentTime == startSuperPower))
-	{
-		if (gost.dir == down)
-			arr[0] = 10000000;
-		else if (gost.dir == up)
-			arr[1] = 10000000;
-		else if (gost.dir == right)
-			arr[2] = 10000000;
-		else if (gost.dir == left)
-			arr[3] = 10000000;
-	}
+    if (!(mode == frightMode&&currentTime == startSuperPower))
+    {
+        if (gost.dir == down)
+            arr[0] = 10000000;
+        else if (gost.dir == up)
+            arr[1] = 10000000;
+        else if (gost.dir == right)
+            arr[2] = 10000000;
+        else if (gost.dir == left)
+            arr[3] = 10000000;
+    }
 
-	if (arr[0] <= arr[1] && arr[0] <= arr[2] && arr[0] <= arr[3])
-	{
-		gost.dir = up;
-		gost.y--;
-		ghostSprite.move(0, -Stepy);
-	}
-	else if (arr[1] <= arr[0] && arr[1] <= arr[2] && arr[1] <= arr[3])
-	{
-		gost.dir = down;
-		gost.y++;
-		ghostSprite.move(0, Stepy);
+    if (arr[0] <= arr[1] && arr[0] <= arr[2] && arr[0] <= arr[3])
+    {
+        gost.dir = up;
+        gost.y--;
+        ghostSprite.move(0, -Stepy);
+    }
+    else if (arr[1] <= arr[0] && arr[1] <= arr[2] && arr[1] <= arr[3])
+    {
+        gost.dir = down;
+        gost.y++;
+        ghostSprite.move(0, Stepy);
 
-	}
-	else if (arr[2] <= arr[1] && arr[2] <= arr[0] && arr[2] <= arr[3])
-	{
-		gost.dir = left;
-		gost.x--;
-		ghostSprite.move(-Stepx, 0);
-	}
-	else
-	{
+    }
+    else if (arr[2] <= arr[1] && arr[2] <= arr[0] && arr[2] <= arr[3])
+    {
+        gost.dir = left;
+        gost.x--;
+        ghostSprite.move(-Stepx, 0);
+    }
+    else
+    {
 
-		gost.dir = right;
-		gost.x++;
-		ghostSprite.move(Stepx, 0);
-	}
+        gost.dir = right;
+        gost.x++;
+        ghostSprite.move(Stepx, 0);
+    }
 }
 
 
@@ -586,12 +610,19 @@ setTimeout(function () {
 
 
 
-setInterval(function () { // GAME LOOP 
+// setInterval(function () { // GAME LOOP 
 
-    mobArr.forEach( mob => mob.move() );
+//     mobArr.forEach(mob => mob.move());
 
-    drawGrid(levelOneGrid);
-}, 500);
+//     drawGrid(levelOneGrid);
+// }, 500);
+ document.onkeydown = checkKey; //to listen for intial user event
+ drawGrid(levelOneGrid);
+var pacmanObj = new PacmanClass();
+
+
+
+
 
 
 

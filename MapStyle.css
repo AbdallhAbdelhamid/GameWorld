@@ -68,16 +68,16 @@ div {
 
 
 .button {
-    background-color: #4CAF50;
-    border: none;
+    background-color: #2d6bb1;
+    border: 1px;
+    border-radius: 10px;
     color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
+    padding: 10px 20px;
     width: 160px;
-    margin-top: 5%;
+    margin-top: 4%;
+    font-size: 16pt;
+
+
 }
 
 .span1 {
@@ -86,9 +86,9 @@ div {
     top: 27%;
 }
 
-body {
+ body {
     background-color: black;
-}
+} 
 
 .idh2 {
     font-family: 'Permanent Marker', cursive;
@@ -98,12 +98,36 @@ body {
     margin-right: auto;
 }
 
-.span2, .span3 {
+ .span2 {
     font-family: 'Permanent Marker', cursive;
     text-align: center;
     color: yellow;
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-    width: 100px;
+    
+     margin-top: 10px;
+    width: 150px;
+    font-size: 19pt;
 }
+
+ .livediv{
+    background-image: url('./pic/6.png');
+    width:50px;
+    height:50px;
+     display:inline-block;
+ 
+    background-size: 50px;
+    margin-left: 10px;
+
+} 
+.outerDiv{
+    width: 970px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 200px;
+    margin: auto;
+    margin-top: 20px;
+    
+
+}
+
+
