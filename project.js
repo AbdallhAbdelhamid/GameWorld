@@ -648,8 +648,6 @@ setInterval(function () { // GAME LOOP
     mobArr.forEach(mob => mob.move());
     mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.gridObjectType]))
 
-
-   //  drawGrid(levelOneGrid);
 }, 500);
 
 
