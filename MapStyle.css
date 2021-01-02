@@ -1,3 +1,24 @@
+body {
+    background-color: black;
+}
+
+div {
+    margin: -2px;
+}
+
+#Map {
+    width: 970px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#life {
+    margin-right: 10px;
+    width: 200px;
+    display: flex;
+    justify-content:flex-end;
+}
+
 .pacman {
     width: 50px;
     height: 50px;
@@ -17,7 +38,8 @@
 .coin {
     width: 50px;
     height: 50px;
-    background-image: url('./pic/coin.png');
+    background-image: url('./pic/coin2.jpg');
+    background-size: 50px;
     display: inline-block;
 }
 
@@ -28,20 +50,10 @@
     display: inline-block;
 }
 
-div {
-    margin: -2px;
-}
-
-#Map {
-    width: 970px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 .blinkymob {
     width: 50px;
     height: 50px;
-    background-image: url('./pic/580b57fcd9996e24bc43c316.png');
+    background-image: url('./pic/blinky.png');
     background-size: 50px;
     background-color: black;
     display: inline-block;
@@ -50,7 +62,7 @@ div {
 .clydemob {
     width: 50px;
     height: 50px;
-    background-image: url('./pic/580b57fcd9996e24bc43c31b.png');
+    background-image: url('./pic/clyde.png');
     background-size: 50px;
     background-color: black;
     display: inline-block;
@@ -60,31 +72,31 @@ div {
 
     width: 50px;
     height: 50px;
-    background-image: url('./pic/580b57fcd9996e24bc43c310.png');
+    background-image: url('./pic/inky.png');
     background-size: 50px;
     background-color: black;
     display: inline-block;
 }
 
-.chain{
+.chain {
 
     width: 50px;
     height: 50px;
-    background-image: url('./pic/71C8HOJLaBL._AC_SY679_.jpg');
+    background-image: url('./pic/chain.jpg');
+
     background-size: 50px;
     background-color: black;
     display: inline-block;
 }
 
-
 .button {
-    background-color: #2d6bb1;
+    background-color: #022072;
     border: 1px;
     border-radius: 10px;
     color: white;
     padding: 10px 20px;
     width: 160px;
-    margin-top: 4%;
+    margin-top: 25%;
     font-size: 16pt;
 }
 
@@ -94,46 +106,63 @@ div {
     top: 27%;
 }
 
- body {
-    background-color: black;
-} 
 
-.idh2 {
+.idh1 {
     font-family: 'Permanent Marker', cursive;
     text-align: center;
     color: yellow;
     margin-left: auto;
     margin-right: auto;
+    font-size: 35pt;
 }
 
- .span2 {
+.span2 {
     font-family: 'Permanent Marker', cursive;
     text-align: center;
     color: yellow;
-    
-     margin-top: 10px;
+    margin-top: 7.5%;
     width: 150px;
-    font-size: 19pt;
+    font-size: 22pt;
 }
 
- .livediv{
+.livediv {
     background-image: url('./pic/6.png');
-    width:50px;
-    height:50px;
-     display:inline-block;
- 
+    width: 50px;
+    height: 50px;
+    display: inline-block;
     background-size: 50px;
     margin-left: 10px;
+    margin-top: 40%;
+    
+}
 
-} 
-.outerDiv{
+.outerDiv {
     width: 970px;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     height: 200px;
     margin: auto;
-    margin-top: 20px;  
+    margin-top: 20px;
+    border: 5px #022072 solid;
+    border-radius: 30px;
+    background-color: #506BB3;
+
 }
 
-
+.gamewonClass {
+    font-family: 'Permanent Marker', cursive;
+    text-align: center;
+    color: yellow;
+    margin: auto;
+    width: 95%;
+    font-size: 30pt;
+}
+.gameoverClass {
+    font-family: 'Permanent Marker', cursive;
+    text-align: center;
+    color: yellow;
+    margin: auto;
+    width: 95%;
+    font-size: 30pt;
+}

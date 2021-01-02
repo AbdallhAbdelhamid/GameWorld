@@ -1,8 +1,11 @@
 var PlayerScore = 0; //player score tracker
+var PacmanStartPosition = 22;//pacman tart index in array
+
 var PacmanPos = 22; //pacman index in array
 var mapWidth = 21;
 var noOflives=3;
 //ahmed
+var timer2;
 
 var movementDirection = {
     PacManStartMove:0,
@@ -99,7 +102,7 @@ function drawGrid(gridArrIn) {
     document.getElementById("Map").innerHTML = "";
     for (var i = 0; i < gridArrIn.length; i++) {
         // draw new grid
-        if (gridArrIn[i] == 1) document.getElementById("Map").innerHTML += "<div class='wall'></div>"
+        if (gridArrIn[i] == gridObjects.WALL) document.getElementById("Map").innerHTML += "<div class='wall'></div>"
         else if (gridArrIn[i] == gridObjects.PACMAN) document.getElementById("Map").innerHTML += "<div class='pacman'></div>"
         else if (gridArrIn[i] == gridObjects.COIN) document.getElementById("Map").innerHTML += "<div class='coin'></div>"
         else if (gridArrIn[i] == gridObjects.EMPTY ||
@@ -118,14 +121,78 @@ function drawGrid(gridArrIn) {
 function drawLives(LIVES) {
     document.getElementById("life").innerHTML = "";
     for (var i = 0; i < LIVES; i++) {
+        document.getElementById("life").innerHTML += "<div class='livediv'></div>"
+    }
 
-        document.getElementById("life").innerHTML += "<div  class='livediv'></div>"
+}
+drawLives(noOflives);
+
+function PacmanLoseLife() {
+    var _BlinkyIndex = MapGrid2dTo1d(blinky.position.x, blinky.position.y);
+    var _CLYDEIndex = MapGrid2dTo1d(clyde.position.x, clyde.position.y);
+    var _INKYIndex = MapGrid2dTo1d(inky.position.x, inky.position.y);
+
+    if (((PacmanPos == _BlinkyIndex) || (PacmanPos == _CLYDEIndex) || (PacmanPos == _INKYIndex)) && (noOflives >= 0)) {
+        noOflives--;
+        if (noOflives >= 0) {
+            drawLives(noOflives)
+            ResetPacman()
+        } else if (noOflives == -1) GameOver();
     }
 }
-drawLives(3);
-// if(PacmanPos==Monsterpostion1||Monsterpostion2||Monsterpostion3||Monsterpostion4)
-// {
-//     noOflives--;
+function ResetPacman() {////////not finished yet
+    clearInterval(timer2);
+    PacmanPos = PacmanStartPosition;
+    levelOneGrid[PacmanPos] = gridObjects.PACMAN;
+    clearTimeout(pacmanObj.timer);
+    pacmanObj.lastDirection = 0;
+    setTimeout(function () {
+        $("div").eq(PacmanStartPosition+1).removeClass().css({
+            'transform': 'rotate(0deg)'
+        }).addClass('pacman')
+        StartGame();
+    }, 500);
+    
+}
+
+function ScoringTracker() {
+    document.getElementById("score").innerHTML = "Score: " + PlayerScore;
+    // if (PlayerScore ==158) { setInterval(GameWon,10); }
+    if (PlayerScore == 158) {
+        GameWon();
+    } //158
+}
+
+function GameWon() {
+    $("#gamewon").show();
+    $("#gameover").hide();
+    $("#option").hide();
+    $(".gamewonClass").animate({
+        fontSize: "22pt"
+    }, 1000, function () {
+        $(".gamewonClass").animate({
+            fontSize: "30pt"
+        }, 1000).effect("fade");
+        GameWon();
+    }).effect("fade")
+
+};
+
+function GameOver() {////////not finished yet
+    $("#gamewon").hide();
+    $("#gameover").show();
+    $("#option").hide();
+    $(".gameoverClass").animate({
+        fontSize: "22pt"
+    }, 1000, function () {
+        $(".gameoverClass").animate({
+            fontSize: "30pt"
+        }, 1000).effect("fade");
+        GameOver();
+    }).effect("fade");
+};
+$("#gamewon").hide();
+$("#gameover").hide();
 
 //*****************************************************class pacman*******************************************************************
 
@@ -172,7 +239,7 @@ PacmanClass.prototype.PacmanMovementCheck = function (e) {
     {
         if (pacmanObj.lastDirection == movementDirection.PacManStartMove) {//if pacman position is changed in another map
             pacmanObj.lastDirection = movementDirection.moveUp;
-            pacmanObj.timer = setTimeout(pacmanObj.MoveUp2, 200)
+            pacmanObj.timer = setTimeout(pacmanObj.MoveUp2, 250)
         } else if (levelOneGrid[PacmanPos - mapWidth] != gridObjects.WALL) {
             pacmanObj.lastDirection = movementDirection.moveUp;
             clearTimeout(pacmanObj.timer);
@@ -183,8 +250,8 @@ PacmanClass.prototype.PacmanMovementCheck = function (e) {
     {
         if (pacmanObj.lastDirection == movementDirection.PacManStartMove) {
             pacmanObj.lastDirection = movementDirection.moveDown;
-            pacmanObj.timer = setTimeout(pacmanObj.MoveDown2, 200)
-        } else if (levelOneGrid[PacmanPos + mapWidth] != gridObjects.WALL) {
+            pacmanObj.timer = setTimeout(pacmanObj.MoveDown2, 250)
+        } else if ((levelOneGrid[PacmanPos + mapWidth] == gridObjects.COIN)||(levelOneGrid[PacmanPos + mapWidth] == gridObjects.EMPTY)) {
             pacmanObj.lastDirection = movementDirection.moveDown;
             clearTimeout(pacmanObj.timer);
             pacmanObj.timer = setTimeout(pacmanObj.MoveDown2, 10)
@@ -194,7 +261,7 @@ PacmanClass.prototype.PacmanMovementCheck = function (e) {
     {
         if (pacmanObj.lastDirection == movementDirection.PacManStartMove) {
             pacmanObj.lastDirection = movementDirection.moveLeft;
-            pacmanObj.timer = setTimeout(pacmanObj.MoveLeft2, 200)
+            pacmanObj.timer = setTimeout(pacmanObj.MoveLeft2, 250)
         } else if (levelOneGrid[PacmanPos - 1] != gridObjects.WALL) {
             pacmanObj.lastDirection = movementDirection.moveLeft;
             clearTimeout(pacmanObj.timer);
@@ -205,7 +272,7 @@ PacmanClass.prototype.PacmanMovementCheck = function (e) {
     {
         if (pacmanObj.lastDirection == movementDirection.PacManStartMove) {
             pacmanObj.lastDirection = movementDirection.moveRight;
-            pacmanObj.timer = setTimeout(pacmanObj.MoveRight2, 200)
+            pacmanObj.timer = setTimeout(pacmanObj.MoveRight2, 250)
         } else if (levelOneGrid[PacmanPos + 1] != gridObjects.WALL) {
             pacmanObj.lastDirection = movementDirection.moveRight;
 
@@ -243,7 +310,7 @@ PacmanClass.prototype.MoveRight2 = function () {
         $(".pacman").eq(0).removeClass('pacman').addClass('empty');
         //$(".pacman").eq(0).removeClass('pacman').css('background-image', "").addClass('empty');
     }
-    pacmanObj.timer = setTimeout(pacmanObj.MoveRight2, 200)
+    pacmanObj.timer = setTimeout(pacmanObj.MoveRight2, 250)
 }
 
 PacmanClass.prototype.MoveLeft2 = function () {
@@ -271,13 +338,13 @@ PacmanClass.prototype.MoveLeft2 = function () {
         $(".pacman").eq(1).removeClass('pacman').addClass('empty');
         //$(".pacman").eq(1).removeClass('pacman').css('background-image', "").addClass('empty');
     }
-    pacmanObj.timer = setTimeout(pacmanObj.MoveLeft2, 200)
+    pacmanObj.timer = setTimeout(pacmanObj.MoveLeft2, 250)
 }
 
 PacmanClass.prototype.MoveDown2 = function () {
     //1=wall object, 2=Pacman object, 3=coin object, 4=empty object
     var _NextDownPos = levelOneGrid[PacmanPos + mapWidth]
-    if (_NextDownPos == gridObjects.WALL) {
+    if ((_NextDownPos == gridObjects.WALL)||(_NextDownPos == gridObjects.CHAIN)){
         //$(".pacman").css('background-image', "url('./pic/new2.png')")
         return 0;
     } else if (_NextDownPos == gridObjects.COIN) {
@@ -301,7 +368,7 @@ PacmanClass.prototype.MoveDown2 = function () {
         $(".pacman").eq(0).removeClass('pacman').addClass('empty');
         //$(".pacman").eq(0).removeClass('pacman').css('background-image', "").addClass('empty');
     }
-    pacmanObj.timer = setTimeout(pacmanObj.MoveDown2, 200)
+    pacmanObj.timer = setTimeout(pacmanObj.MoveDown2, 250)
 }
 
 PacmanClass.prototype.MoveUp2 = function () {
@@ -331,33 +398,20 @@ PacmanClass.prototype.MoveUp2 = function () {
         $(".pacman").eq(1).removeClass('pacman').addClass('empty');
         //$(".pacman").eq(1).removeClass('pacman').css('background-image', "").addClass('empty');
     }
-    pacmanObj.timer = setTimeout(pacmanObj.MoveUp2, 200)
+    pacmanObj.timer = setTimeout(pacmanObj.MoveUp2, 250)
 }
 
-function ScoringTracker() {
-    document.getElementById("score").innerHTML = "Score: " + PlayerScore;
-    // if (PlayerScore ==158) { setInterval(GameWon,10); }
 
-    if (PlayerScore == 158) { GameWon(); }//158
-
-}
-
-function GameWon() {
-    drawGrid(levelOneGrid);
-    $("#score").html("Congratulations You Have Won").effect("shake");
-
-};
-
-
-var audio = new Audio('./Audio/12.wav');
+var audio = new Audio('./Audio/12.wav');//stop ez3ag
 // onload=function(){
 
 // audio.play();
 // }
 
-$('#play').click(function(){
+$('#play').click(function () {
+    audio.play();
+ 
 
-audio.play();
 });
 $('#pause').click(function(){
 
@@ -415,8 +469,7 @@ Monster.mode = mobMode.ATTACK; // default behaviur for mobs.
 
 
 // Monster movement
-Object.defineProperty(Monster.prototype, "move", {
-
+Object.defineProperty(Monster.prototype, "move", {        
         value: function () {
             if (this.lastGridObject == gridObjects.COIN || this.lastGridObject == gridObjects.EMPTY)
                 levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.lastGridObject; // remove current mob and place the old obj
@@ -497,7 +550,7 @@ Object.defineProperty(Monster.prototype, "move", {
             if (levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y) ]== gridObjects.COIN ||
                 levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] == gridObjects.EMPTY) 
                 this.lastGridObject = levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)];
-                             
+
             levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.gridObjectType; // Put mob in new pos
         },
         enumerable: false,
@@ -662,13 +715,18 @@ setTimeout(function () {
  document.onkeydown = checkKey; //to listen for intial user event
  drawGrid(levelOneGrid);
 var pacmanObj = new PacmanClass();
-
-setInterval(function () { // GAME LOOP 
+ 
+function StartGame(){
+    timer2=setInterval(function () { // GAME LOOP 
     mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.lastGridObject]));
     mobArr.forEach(mob => mob.move());
+                PacmanLoseLife();
+
     mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.gridObjectType]))
 
-}, 500);
+}, 250);
+}
+StartGame()
 
 
 
