@@ -1,5 +1,6 @@
 var PlayerScore = 0; //player score tracker
 var PacmanStartPosition = 22;//pacman tart index in array
+
 var PacmanPos = 22; //pacman index in array
 var mapWidth = 21;
 var noOflives=3;
@@ -116,6 +117,7 @@ function drawGrid(gridArrIn) {
     }
 }
 
+
 function drawLives(LIVES) {
     document.getElementById("life").innerHTML = "";
     for (var i = 0; i < LIVES; i++) {
@@ -191,6 +193,7 @@ function GameOver() {////////not finished yet
 };
 $("#gamewon").hide();
 $("#gameover").hide();
+
 //*****************************************************class pacman*******************************************************************
 
 var PacmanClass = function () {
@@ -466,8 +469,7 @@ Monster.mode = mobMode.ATTACK; // default behaviur for mobs.
 
 
 // Monster movement
-Object.defineProperty(Monster.prototype, "move", {
-        
+Object.defineProperty(Monster.prototype, "move", {        
         value: function () {
             if (this.lastGridObject == gridObjects.COIN || this.lastGridObject == gridObjects.EMPTY)
                 levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.lastGridObject; // remove current mob and place the old obj
@@ -548,7 +550,7 @@ Object.defineProperty(Monster.prototype, "move", {
             if (levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y) ]== gridObjects.COIN ||
                 levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] == gridObjects.EMPTY) 
                 this.lastGridObject = levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)];
-               //              
+
             levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.gridObjectType; // Put mob in new pos
         },
         enumerable: false,
@@ -725,6 +727,7 @@ function StartGame(){
 }, 250);
 }
 StartGame()
+
 
 
 
