@@ -5,10 +5,11 @@ var PacmanPos = 22; //pacman index in array
 var mapWidth = 21;
 var noOflives = 3;
 
-var homeLIndex= 135;
-var homeRIndex= 137;
-var homeMIndex= 136;
-var gamePaused = false;
+var homeLIndex = 135;
+var homeRIndex = 137;
+var homeMIndex = 136;
+//var gameStarted = false;
+var gamePaused = true;
 //ahmed
 var timer2;
 
@@ -58,6 +59,7 @@ var keyboard = {
     ARROWDOWN: '40',
     ARROWLEFT: '37',
     ARROWRIGHT: '39',
+    ENTER: '13'
 }
 
 
@@ -66,13 +68,13 @@ var keyboard = {
 // check if it's better as 2d array or 1d array
 // ghost // power up 
 // grid is 21 x 16
-var levelOneGrid = [  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+var levelOneGrid = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
                     , 1, 2, 3, 3, 3, 3, 3, 3, 3, 1, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1
                     , 1, 3, 1, 1, 3, 1, 1, 1, 3, 3, 3, 3, 3, 1, 1, 1, 3, 1, 1, 3, 1
                     , 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 1
-                    , 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1
+                    , 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 5, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1
                     , 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 4, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1
-                    , 1, 3, 3, 3, 3, 3, 3, 1, 1, 9, 11, 10, 1, 1, 3, 3, 3, 3, 3, 3, 1
+                    , 1, 3, 3, 3, 3, 3, 3, 1, 1, 6, 11, 7, 1, 1, 3, 3, 3, 3, 3, 3, 1
                     , 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1
                     , 1, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1
                     , 1, 3, 1, 3, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 3, 1, 3, 1
@@ -143,8 +145,8 @@ function PacmanLoseLife() {
         {
             noOflives--;
             gamePaused = true;
-            
-                
+
+
             levelOneGrid[_BlinkyIndex] = blinky.lastGridObject;
             levelOneGrid[_CLYDEIndex] = blinky.lastGridObject;
             levelOneGrid[_INKYIndex] = blinky.lastGridObject;
@@ -177,7 +179,7 @@ function ResetPacman() { ////////not finished yet
 function ScoringTracker() {
     document.getElementById("score").innerHTML = "Score: " + PlayerScore;
     // if (PlayerScore ==158) { setInterval(GameWon,10); }
-    if (PlayerScore == 153) {
+    if (PlayerScore == 152) {
         GameWon();
     } //158
 }
@@ -241,6 +243,10 @@ function checkKey(e) {
     } else if ((e.keyCode == keyboard.ARROWRIGHT) && (pacmanObj.lastDirection != movementDirection.moveRight) && !gamePaused) //key right 
     {
         pacmanObj.PacmanMovementCheck(e)
+    } else if ((e.keyCode == keyboard.ENTER) && gamePaused == true) //key right 
+    {
+        gamePaused = false;
+        StartGame();
     }
 }
 
@@ -644,49 +650,47 @@ document.onkeydown = checkKey; //to listen for intial user event
 
 var pacmanObj = new PacmanClass();
 
-var blinky, clyde, inky; // monsters
 var clydeTimer, inkyTimer, chainTimer; // monsters timers and chain timer
 
+
+drawGrid(levelOneGrid);
+var blinky, clyde, inky;
+
 function StartGame() {
-    gamePaused = false;
-    
-    //levelOneGrid = InitialMap.slice(); // to be removed
 
     clydeTimer != null ? clearTimeout(clydeTimer) : null;
-    inkyTimer != null ? clearTimeout(inkyTimer) : null;
+    inkyTimer  != null ? clearTimeout(inkyTimer) : null;
     chainTimer != null ? clearTimeout(chainTimer) : null;
     
-    
     blinky = new Monster(0, 0, 10, 4, gridObjects.BLINKY, gridObjectsClass[gridObjects.BLINKY]);
-    clyde = new Monster (3, 0,  9, 6, gridObjects.CLYDE, gridObjectsClass[gridObjects.CLYDE]);    //blinky = new Monster(2, 2, 10, 4, gridObjects.BLINKY, gridObjectsClass[gridObjects.BLINKY]);
+    clyde = new Monster(3, 0, 9, 6, gridObjects.CLYDE, gridObjectsClass[gridObjects.CLYDE]); //blinky = new Monster(2, 2, 10, 4, gridObjects.BLINKY, gridObjectsClass[gridObjects.BLINKY]);
     inky = new Monster(-5, 3, 11, 6, gridObjects.INKY, gridObjectsClass[gridObjects.INKY]);
+
     drawGrid(levelOneGrid);
 
     var mobArr = [blinky];
     mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.gridObjectType]))
 
+   if (!gamePaused) {
+        timer2 = setInterval(function () { // GAME LOOP 
+            mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.lastGridObject]));
+            mobArr.forEach(mob => mob.move());
+            PacmanLoseLife();
+            mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.gridObjectType]))
 
-    timer2 = setInterval(function () { // GAME LOOP 
-        mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.lastGridObject]));
-        mobArr.forEach(mob => mob.move());
-        PacmanLoseLife();
-        mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.gridObjectType]))
+        }, 500);
 
-    }, 500);
+        clydeTimer = setTimeout(function () {
+            mobArr[1] = clyde
+            inkyTimer = setTimeout(function () {
+                mobArr[2] = inky;
 
-    clydeTimer = setTimeout(function () {
-        mobArr[1] = clyde
-        inkyTimer = setTimeout(function () {
-            mobArr[2] = inky;
-            
-            chainTimer = setTimeout(function () {
-                DrawObjectOnGrid(10, 5, 'chain');
-                levelOneGrid[MapGrid2dTo1d(10, 5)] = gridObjects.CHAIN;
-            }, 2000)
-        }, 5000); // release clyde after 10 seconds.
-    }, 5000); // release clyde after 5 seconds.
+                chainTimer = setTimeout(function () {
+                    DrawObjectOnGrid(10, 5, 'chain');
+                    levelOneGrid[MapGrid2dTo1d(10, 5)] = gridObjects.CHAIN;
+                }, 2000)
+            }, 5000); // release clyde after 10 seconds.
+        }, 5000); // release clyde after 5 seconds.
 
+    }
 }
-
-
-StartGame();
