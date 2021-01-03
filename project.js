@@ -501,9 +501,9 @@ Monster.mode = mobMode.ATTACK; // default behaviur for mobs.
 // Monster movement
 Object.defineProperty(Monster.prototype, "move", {
         value: function () {
-            if (this.lastGridObject == gridObjects.COIN || this.lastGridObject == gridObjects.EMPTY)
+            if (this.lastGridObject == gridObjects.COIN || this.lastGridObject == gridObjects.EMPTY) 
                 levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.lastGridObject; // remove current mob and place the old obj
-
+            
             var dx = [0, 0, -1, 1],
                 dy = [-1, 1, 0, 0]; // all possible path:  up=0  down=1  left=2 right=3
 
@@ -598,6 +598,9 @@ Object.defineProperty(Monster.prototype, "move", {
                 this.position.x = oldPos.x;
                 this.position.y = oldPos.y;
             }
+            else if(levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] == gridObjects.PACMAN)
+               this.lastGridObject = gridObjects.EMPTY;
+
         },
         enumerable: false,
         writable: false,
