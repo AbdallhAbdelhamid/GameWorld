@@ -10,6 +10,7 @@ var homeRIndex = 137;
 var homeMIndex = 136;
 //var gameStarted = false;
 var gamePaused = true;
+var enterPressed = false;
 //ahmed
 var timer2;
 
@@ -68,7 +69,7 @@ var keyboard = {
 // check if it's better as 2d array or 1d array
 // ghost // power up 
 // grid is 21 x 16
-var levelOneGrid = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+var levelOneGrid = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
                     , 1, 2, 3, 3, 3, 3, 3, 3, 3, 1, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1
                     , 1, 3, 1, 1, 3, 1, 1, 1, 3, 3, 3, 3, 3, 1, 1, 1, 3, 1, 1, 3, 1
                     , 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 1
@@ -145,18 +146,14 @@ function PacmanLoseLife() {
         {
             noOflives--;
             gamePaused = true;
-
-
             levelOneGrid[_BlinkyIndex] = blinky.lastGridObject;
             levelOneGrid[_CLYDEIndex] = blinky.lastGridObject;
             levelOneGrid[_INKYIndex] = blinky.lastGridObject;
             levelOneGrid[MapGrid2dTo1d(10, 5)] = gridObjects.EMPTY;
-
-
         }
         if (noOflives >= 0) {
-            ResetPacman()
-            drawLives(noOflives)
+            ResetPacman();
+            drawLives(noOflives);
         } else if (noOflives == -1) GameOver();
     }
 }
@@ -171,6 +168,7 @@ function ResetPacman() { ////////not finished yet
         $("div").eq(PacmanStartPosition + 1).removeClass().css({
             'transform': 'rotate(0deg)'
         }).addClass('pacman')
+        enterPressed = false;
         StartGame();
     }, 2000);
 
@@ -179,15 +177,15 @@ function ResetPacman() { ////////not finished yet
 function ScoringTracker() {
     document.getElementById("score").innerHTML = "Score: " + PlayerScore;
     // if (PlayerScore ==158) { setInterval(GameWon,10); }
-    if (PlayerScore == 152) {
+    if (PlayerScore == 153) {
         GameWon();
     } //158
 }
 
 function GameWon() {
-    gamePaused = true;
-    clearInterval(timer2);
     clearTimeout(pacmanObj.timer);
+    gamePaused = true; enterPressed = false;
+    clearInterval(timer2);
     $("#gamewon").show();
     $("#gameover").hide();
     $("#option").hide();
@@ -203,7 +201,7 @@ function GameWon() {
 };
 
 function GameOver() { ////////not finished yet
-    gamePaused = true;
+    gamePaused = true; enterPressed = false;
     clearInterval(timer2);
 
     $("#gamewon").hide();
@@ -243,9 +241,10 @@ function checkKey(e) {
     } else if ((e.keyCode == keyboard.ARROWRIGHT) && (pacmanObj.lastDirection != movementDirection.moveRight) && !gamePaused) //key right 
     {
         pacmanObj.PacmanMovementCheck(e)
-    } else if ((e.keyCode == keyboard.ENTER) && gamePaused == true) //key right 
+    } else if ((e.keyCode == keyboard.ENTER) && gamePaused && !enterPressed) // start game 
     {
         gamePaused = false;
+        enterPressed = true;
         StartGame();
     }
 }
@@ -667,7 +666,7 @@ function StartGame() {
     inky = new Monster(-5, 3, 11, 6, gridObjects.INKY, gridObjectsClass[gridObjects.INKY]);
 
     drawGrid(levelOneGrid);
-
+    
     var mobArr = [blinky];
     mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.gridObjectType]))
 
@@ -675,8 +674,8 @@ function StartGame() {
         timer2 = setInterval(function () { // GAME LOOP 
             mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.lastGridObject]));
             mobArr.forEach(mob => mob.move());
-            PacmanLoseLife();
             mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.gridObjectType]))
+            PacmanLoseLife();
 
         }, 500);
 
