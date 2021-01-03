@@ -177,7 +177,7 @@ function ResetPacman() { ////////not finished yet
 function ScoringTracker() {
     document.getElementById("score").innerHTML = "Score: " + PlayerScore;
     // if (PlayerScore ==158) { setInterval(GameWon,10); }
-    if (PlayerScore == 158) {
+    if (PlayerScore == 153) {
         GameWon();
     } //158
 }
@@ -185,6 +185,7 @@ function ScoringTracker() {
 function GameWon() {
     gamePaused = true;
     clearInterval(timer2);
+    clearTimeout(pacmanObj.timer);
     $("#gamewon").show();
     $("#gameover").hide();
     $("#option").hide();
