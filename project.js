@@ -657,8 +657,8 @@ function StartGame() {
     chainTimer != null ? clearTimeout(chainTimer) : null;
     
     
-    blinky = new Monster(2, 2, 10, 4, gridObjects.BLINKY, gridObjectsClass[gridObjects.BLINKY]);
-    clyde = new Monster (2, 2,  9, 6, gridObjects.CLYDE, gridObjectsClass[gridObjects.CLYDE]);    //blinky = new Monster(2, 2, 10, 4, gridObjects.BLINKY, gridObjectsClass[gridObjects.BLINKY]);
+    blinky = new Monster(0, 0, 10, 4, gridObjects.BLINKY, gridObjectsClass[gridObjects.BLINKY]);
+    clyde = new Monster (3, 0,  9, 6, gridObjects.CLYDE, gridObjectsClass[gridObjects.CLYDE]);    //blinky = new Monster(2, 2, 10, 4, gridObjects.BLINKY, gridObjectsClass[gridObjects.BLINKY]);
     inky = new Monster(-5, 3, 11, 6, gridObjects.INKY, gridObjectsClass[gridObjects.INKY]);
     drawGrid(levelOneGrid);
 
