@@ -4,6 +4,8 @@ var PacmanStartPosition = 22; //pacman tart index in array
 var PacmanPos = 22; //pacman index in array
 var mapWidth = 21;
 var noOflives = 3;
+
+var gamePaused = false;
 //ahmed
 var timer2;
 
@@ -135,10 +137,10 @@ function PacmanLoseLife() {
     var _INKYIndex = MapGrid2dTo1d(inky.position.x, inky.position.y);
 
     if (((PacmanPos == _BlinkyIndex) || (PacmanPos == _CLYDEIndex) || (PacmanPos == _INKYIndex)) && (noOflives >= 0)) {
-        noOflives--;
+        {noOflives--; gamePaused = true;}
         if (noOflives >= 0) {
-            drawLives(noOflives)
             ResetPacman()
+            drawLives(noOflives)
         } else if (noOflives == -1) GameOver();
     }
 }
@@ -207,16 +209,16 @@ var PacmanClass = function () {
 function checkKey(e) {
     e = window.event;
 
-    if ((e.keyCode == keyboard.ARROWUP) && (pacmanObj.lastDirection != movementDirection.moveUp)) //key up
+    if ((e.keyCode == keyboard.ARROWUP) && (pacmanObj.lastDirection != movementDirection.moveUp) && !gamePaused) //key up
     {
         pacmanObj.PacmanMovementCheck(e)
-    } else if ((e.keyCode == keyboard.ARROWDOWN) && (pacmanObj.lastDirection != movementDirection.moveDown)) //key down
+    } else if ((e.keyCode == keyboard.ARROWDOWN) && (pacmanObj.lastDirection != movementDirection.moveDown) && !gamePaused) //key down
     {
         pacmanObj.PacmanMovementCheck(e)
-    } else if ((e.keyCode == keyboard.ARROWLEFT) && (pacmanObj.lastDirection != movementDirection.moveLeft)) //key left  
+    } else if ((e.keyCode == keyboard.ARROWLEFT) && (pacmanObj.lastDirection != movementDirection.moveLeft) && !gamePaused) //key left  
     {
         pacmanObj.PacmanMovementCheck(e)
-    } else if ((e.keyCode == keyboard.ARROWRIGHT) && (pacmanObj.lastDirection != movementDirection.moveRight)) //key right 
+    } else if ((e.keyCode == keyboard.ARROWRIGHT) && (pacmanObj.lastDirection != movementDirection.moveRight) && !gamePaused) //key right 
     {
         pacmanObj.PacmanMovementCheck(e)
     }
@@ -592,96 +594,6 @@ function GetDistance(x1, y1, x2, y2) { // calculates eculudian distance between 
 }
 
 
-/*
-int dx[] = { 0, 0, -1, 1 }, dy[] = { -1, 1, 0, 0 };
-void ghostmoving(ghostStruct& gost, Sprite& ghostSprite, double Stepx, double Stepy, int ghostNum, char usedmap[30][32], int mode)
-{
-    if (ghost_isLife[ghostNum - 1] == 0)
-    {
-        gost.Xdir = 11;
-        gost.Ydir = 9;
-        if (gost.x == 11 && gost.y == 9)
-            ghost_isLife[ghostNum - 1] = 2;
-    }
-    else if (mode == attackMode)
-    {
-        int dirctionx[] = { 0, 7, -5, 0 }, dirctiony[] = { 0, 0, 3, 3 };
-        gost.Xdir = pac.x + dirctionx[ghostNum - 1];
-        gost.Ydir = pac.y + dirctiony[ghostNum - 1];
-    }
-    else if (mode == frightMode)
-    {
-        int scared_x[] = { 1, 19, 1, 19 }, scared_y[] = { 2, 2, 20, 20 };
-        gost.Xdir = scared_x[ghostNum - 1];
-        gost.Ydir = scared_y[ghostNum - 1];
-    }
-    else //if (mode == randamMode)
-    {
-        int dirctionx[] = { 0, 7, -5, -3 }, dirctiony[] = { 0, 7, -2, 3 };
-        srand(time(NULL));
-        gost.Xdir = rand() % 30 + dirctionx[ghostNum - 1];
-        gost.Ydir = rand() % 30 + dirctiony[ghostNum - 1];
-    }
-    //up=0
-    //down=1
-    //left=2
-    //right=3
-
-    long long arr[5];
-    for (int i = 0; i < 4; i++)
-    {
-        if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '#')
-            arr[i] = 100000000;
-        else if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '*'&&ghost_isLife[ghostNum - 1])
-            arr[i] = 5000000;
-        else if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '_'&&ghost_isLife[ghostNum - 1])
-            arr[i] = 4000000;
-        else
-            arr[i] = dist(gost.Xdir, gost.Ydir, gost.x + dx[i], gost.y + dy[i]);
-    }
-
-    if (!(mode == frightMode&&currentTime == startSuperPower))
-    {
-        if (gost.dir == down)
-            arr[0] = 10000000;
-        else if (gost.dir == up)
-            arr[1] = 10000000;
-        else if (gost.dir == right)
-            arr[2] = 10000000;
-        else if (gost.dir == left)
-            arr[3] = 10000000;
-    }
-
-    if (arr[0] <= arr[1] && arr[0] <= arr[2] && arr[0] <= arr[3])
-    {
-        gost.dir = up;
-        gost.y--;
-        ghostSprite.move(0, -Stepy);
-    }
-    else if (arr[1] <= arr[0] && arr[1] <= arr[2] && arr[1] <= arr[3])
-    {
-        gost.dir = down;
-        gost.y++;
-        ghostSprite.move(0, Stepy);
-
-    }
-    else if (arr[2] <= arr[1] && arr[2] <= arr[0] && arr[2] <= arr[3])
-    {
-        gost.dir = left;
-        gost.x--;
-        ghostSprite.move(-Stepx, 0);
-    }
-    else
-    {
-        gost.dir = right;
-        gost.x++;
-        ghostSprite.move(Stepx, 0);
-    }
-}
-
-
-*/
-
 
 function DrawObjectOnGrid(xPos, yPos, gridObjectClass) {
     var gridIndex = MapGrid2dTo1d(xPos, yPos);
@@ -694,17 +606,17 @@ Monster.switchMovement();
 
 //TO DO: make enum for mobs initial positions
 
-
 document.onkeydown = checkKey; //to listen for intial user event
+
 var pacmanObj = new PacmanClass();
 
 var blinky, clyde, inky; // monsters
 var clydeTimer, inkyTimer, chainTimer; // monsters timers and chain timer
 
 function StartGame() {
-    
+    gamePaused = false;
     clydeTimer != null ?  clearTimeout(clydeTimer) : null;
-    inkyTimer != null ? clearTimeout(inkyTimer) : null;
+    inkyTimer  != null ?  clearTimeout(inkyTimer)  : null;
     chainTimer != null ?  clearTimeout(chainTimer) : null;
     
     levelOneGrid = InitialMap.slice();
