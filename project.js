@@ -4,6 +4,13 @@ var PacmanStartPosition = 22; //pacman tart index in array
 var PacmanPos = 22; //pacman index in array
 var mapWidth = 21;
 var noOflives = 3;
+
+var homeLIndex = 135;
+var homeRIndex = 137;
+var homeMIndex = 136;
+//var gameStarted = false;
+var gamePaused = true;
+var enterPressed = false;
 //ahmed
 var timer2;
 
@@ -53,6 +60,7 @@ var keyboard = {
     ARROWDOWN: '40',
     ARROWLEFT: '37',
     ARROWRIGHT: '39',
+    ENTER: '13'
 }
 
 
@@ -61,13 +69,13 @@ var keyboard = {
 // check if it's better as 2d array or 1d array
 // ghost // power up 
 // grid is 21 x 16
-var levelOneGrid = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+var levelOneGrid = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
                     , 1, 2, 3, 3, 3, 3, 3, 3, 3, 1, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1
                     , 1, 3, 1, 1, 3, 1, 1, 1, 3, 3, 3, 3, 3, 1, 1, 1, 3, 1, 1, 3, 1
                     , 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 1
-                    , 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1
+                    , 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 5, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1
                     , 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 4, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1
-                    , 1, 3, 3, 3, 3, 3, 3, 1, 1, 9, 11, 10, 1, 1, 3, 3, 3, 3, 3, 3, 1
+                    , 1, 3, 3, 3, 3, 3, 3, 1, 1, 6, 11, 7, 1, 1, 3, 3, 3, 3, 3, 3, 1
                     , 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1
                     , 1, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1
                     , 1, 3, 1, 3, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 3, 1, 3, 1
@@ -135,10 +143,17 @@ function PacmanLoseLife() {
     var _INKYIndex = MapGrid2dTo1d(inky.position.x, inky.position.y);
 
     if (((PacmanPos == _BlinkyIndex) || (PacmanPos == _CLYDEIndex) || (PacmanPos == _INKYIndex)) && (noOflives >= 0)) {
-        noOflives--;
+        {
+            noOflives--;
+            gamePaused = true;
+            levelOneGrid[_BlinkyIndex] = blinky.lastGridObject;
+            levelOneGrid[_CLYDEIndex] = blinky.lastGridObject;
+            levelOneGrid[_INKYIndex] = blinky.lastGridObject;
+            levelOneGrid[MapGrid2dTo1d(10, 5)] = gridObjects.EMPTY;
+        }
         if (noOflives >= 0) {
-            drawLives(noOflives)
-            ResetPacman()
+            ResetPacman();
+            drawLives(noOflives);
         } else if (noOflives == -1) GameOver();
     }
 }
@@ -153,6 +168,7 @@ function ResetPacman() { ////////not finished yet
         $("div").eq(PacmanStartPosition + 1).removeClass().css({
             'transform': 'rotate(0deg)'
         }).addClass('pacman')
+        enterPressed = false;
         StartGame();
     }, 2000);
 
@@ -161,12 +177,15 @@ function ResetPacman() { ////////not finished yet
 function ScoringTracker() {
     document.getElementById("score").innerHTML = "Score: " + PlayerScore;
     // if (PlayerScore ==158) { setInterval(GameWon,10); }
-    if (PlayerScore == 158) {
+    if (PlayerScore == 153) {
         GameWon();
     } //158
 }
 
 function GameWon() {
+    clearTimeout(pacmanObj.timer);
+    gamePaused = true; enterPressed = false;
+    clearInterval(timer2);
     $("#gamewon").show();
     $("#gameover").hide();
     $("#option").hide();
@@ -182,6 +201,9 @@ function GameWon() {
 };
 
 function GameOver() { ////////not finished yet
+    gamePaused = true; enterPressed = false;
+    clearInterval(timer2);
+
     $("#gamewon").hide();
     $("#gameover").show();
     $("#option").hide();
@@ -207,18 +229,23 @@ var PacmanClass = function () {
 function checkKey(e) {
     e = window.event;
 
-    if ((e.keyCode == keyboard.ARROWUP) && (pacmanObj.lastDirection != movementDirection.moveUp)) //key up
+    if ((e.keyCode == keyboard.ARROWUP) && (pacmanObj.lastDirection != movementDirection.moveUp) && !gamePaused) //key up
     {
         pacmanObj.PacmanMovementCheck(e)
-    } else if ((e.keyCode == keyboard.ARROWDOWN) && (pacmanObj.lastDirection != movementDirection.moveDown)) //key down
+    } else if ((e.keyCode == keyboard.ARROWDOWN) && (pacmanObj.lastDirection != movementDirection.moveDown) && !gamePaused) //key down
     {
         pacmanObj.PacmanMovementCheck(e)
-    } else if ((e.keyCode == keyboard.ARROWLEFT) && (pacmanObj.lastDirection != movementDirection.moveLeft)) //key left  
+    } else if ((e.keyCode == keyboard.ARROWLEFT) && (pacmanObj.lastDirection != movementDirection.moveLeft) && !gamePaused) //key left  
     {
         pacmanObj.PacmanMovementCheck(e)
-    } else if ((e.keyCode == keyboard.ARROWRIGHT) && (pacmanObj.lastDirection != movementDirection.moveRight)) //key right 
+    } else if ((e.keyCode == keyboard.ARROWRIGHT) && (pacmanObj.lastDirection != movementDirection.moveRight) && !gamePaused) //key right 
     {
         pacmanObj.PacmanMovementCheck(e)
+    } else if ((e.keyCode == keyboard.ENTER) && gamePaused && !enterPressed) // start game 
+    {
+        gamePaused = false;
+        enterPressed = true;
+        StartGame();
     }
 }
 
@@ -474,9 +501,9 @@ Monster.mode = mobMode.ATTACK; // default behaviur for mobs.
 // Monster movement
 Object.defineProperty(Monster.prototype, "move", {
         value: function () {
-            if (this.lastGridObject == gridObjects.COIN || this.lastGridObject == gridObjects.EMPTY)
+            if (this.lastGridObject == gridObjects.COIN || this.lastGridObject == gridObjects.EMPTY) 
                 levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.lastGridObject; // remove current mob and place the old obj
-
+            
             var dx = [0, 0, -1, 1],
                 dy = [-1, 1, 0, 0]; // all possible path:  up=0  down=1  left=2 right=3
 
@@ -507,13 +534,11 @@ Object.defineProperty(Monster.prototype, "move", {
                 if (levelOneGrid[MapGrid2dTo1d((this.position.x + dx[i]), (this.position.y + dy[i]))] == gridObjects.WALL ||
                     levelOneGrid[MapGrid2dTo1d((this.position.x + dx[i]), (this.position.y + dy[i]))] == gridObjects.CHAIN)
                     allDistance[i] = 115000000;
-                else if (levelOneGrid[MapGrid2dTo1d((this.position.x + dx[i]), (this.position.y + dy[i]))] == gridObjects.HOMEL ||
-                    levelOneGrid[MapGrid2dTo1d((this.position.x + dx[i]), (this.position.y + dy[i]))] == gridObjects.INKY ||
-                    levelOneGrid[MapGrid2dTo1d((this.position.x + dx[i]), (this.position.y + dy[i]))] == gridObjects.CLYDE ||
-                    levelOneGrid[MapGrid2dTo1d((this.position.x + dx[i]), (this.position.y + dy[i]))] == gridObjects.HOMER)
+                else if (MapGrid2dTo1d((this.position.x + dx[i]), (this.position.y + dy[i])) == homeLIndex ||
+                    MapGrid2dTo1d((this.position.x + dx[i]), (this.position.y + dy[i])) == homeRIndex)
                     allDistance[i] = 5000000;
-                else if (levelOneGrid[MapGrid2dTo1d((this.position.x + dx[i]), (this.position.y + dy[i]))] == gridObjects.HOMEM)
-                    allDistance[i] = 2500000;
+                else if (MapGrid2dTo1d((this.position.x + dx[i]), (this.position.y + dy[i])) == homeMIndex)
+                    allDistance[i] = 100000;
 
                 else
                     allDistance[i] = GetDistance((this.position.x + dx[i]), (this.position.y + dy[i]),
@@ -534,6 +559,12 @@ Object.defineProperty(Monster.prototype, "move", {
 
             var minDistance = Math.min.apply(null, allDistance);
 
+            // save old position in case of needing to revert changes
+            var oldPos = {
+                x: this.position.x,
+                y: this.position.y
+            }
+
             if (allDistance[direction.UP] == minDistance) { // move up
                 this.direction = direction.UP;
                 this.position.y--;
@@ -549,14 +580,27 @@ Object.defineProperty(Monster.prototype, "move", {
             } else if (allDistance[direction.RIGHT] == minDistance) { // move right
                 this.direction = direction.RIGHT
                 this.position.x++;
+            }
 
-            }
+            // if current position is a object coin or empty, move normally.
             if (levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] == gridObjects.COIN ||
-                levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] == gridObjects.EMPTY){
+                levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] == gridObjects.EMPTY) {
                 this.lastGridObject = levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)];
-            
-            levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.gridObjectType; // Put mob in new pos
+
+                levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] = this.gridObjectType; // Put mob in new pos
             }
+
+            // if current position is another monster, don't move
+            // helps in avoiding moving on top of each other
+            else if (levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] == gridObjects.BLINKY ||
+                levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] == gridObjects.INKY ||
+                levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] == gridObjects.CLYDE) {
+                this.position.x = oldPos.x;
+                this.position.y = oldPos.y;
+            }
+            else if(levelOneGrid[MapGrid2dTo1d(this.position.x, this.position.y)] == gridObjects.PACMAN)
+               this.lastGridObject = gridObjects.EMPTY;
+
         },
         enumerable: false,
         writable: false,
@@ -592,96 +636,6 @@ function GetDistance(x1, y1, x2, y2) { // calculates eculudian distance between 
 }
 
 
-/*
-int dx[] = { 0, 0, -1, 1 }, dy[] = { -1, 1, 0, 0 };
-void ghostmoving(ghostStruct& gost, Sprite& ghostSprite, double Stepx, double Stepy, int ghostNum, char usedmap[30][32], int mode)
-{
-    if (ghost_isLife[ghostNum - 1] == 0)
-    {
-        gost.Xdir = 11;
-        gost.Ydir = 9;
-        if (gost.x == 11 && gost.y == 9)
-            ghost_isLife[ghostNum - 1] = 2;
-    }
-    else if (mode == attackMode)
-    {
-        int dirctionx[] = { 0, 7, -5, 0 }, dirctiony[] = { 0, 0, 3, 3 };
-        gost.Xdir = pac.x + dirctionx[ghostNum - 1];
-        gost.Ydir = pac.y + dirctiony[ghostNum - 1];
-    }
-    else if (mode == frightMode)
-    {
-        int scared_x[] = { 1, 19, 1, 19 }, scared_y[] = { 2, 2, 20, 20 };
-        gost.Xdir = scared_x[ghostNum - 1];
-        gost.Ydir = scared_y[ghostNum - 1];
-    }
-    else //if (mode == randamMode)
-    {
-        int dirctionx[] = { 0, 7, -5, -3 }, dirctiony[] = { 0, 7, -2, 3 };
-        srand(time(NULL));
-        gost.Xdir = rand() % 30 + dirctionx[ghostNum - 1];
-        gost.Ydir = rand() % 30 + dirctiony[ghostNum - 1];
-    }
-    //up=0
-    //down=1
-    //left=2
-    //right=3
-
-    long long arr[5];
-    for (int i = 0; i < 4; i++)
-    {
-        if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '#')
-            arr[i] = 100000000;
-        else if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '*'&&ghost_isLife[ghostNum - 1])
-            arr[i] = 5000000;
-        else if (usedmap[gost.y + dy[i]][gost.x + dx[i]] == '_'&&ghost_isLife[ghostNum - 1])
-            arr[i] = 4000000;
-        else
-            arr[i] = dist(gost.Xdir, gost.Ydir, gost.x + dx[i], gost.y + dy[i]);
-    }
-
-    if (!(mode == frightMode&&currentTime == startSuperPower))
-    {
-        if (gost.dir == down)
-            arr[0] = 10000000;
-        else if (gost.dir == up)
-            arr[1] = 10000000;
-        else if (gost.dir == right)
-            arr[2] = 10000000;
-        else if (gost.dir == left)
-            arr[3] = 10000000;
-    }
-
-    if (arr[0] <= arr[1] && arr[0] <= arr[2] && arr[0] <= arr[3])
-    {
-        gost.dir = up;
-        gost.y--;
-        ghostSprite.move(0, -Stepy);
-    }
-    else if (arr[1] <= arr[0] && arr[1] <= arr[2] && arr[1] <= arr[3])
-    {
-        gost.dir = down;
-        gost.y++;
-        ghostSprite.move(0, Stepy);
-
-    }
-    else if (arr[2] <= arr[1] && arr[2] <= arr[0] && arr[2] <= arr[3])
-    {
-        gost.dir = left;
-        gost.x--;
-        ghostSprite.move(-Stepx, 0);
-    }
-    else
-    {
-        gost.dir = right;
-        gost.x++;
-        ghostSprite.move(Stepx, 0);
-    }
-}
-
-
-*/
-
 
 function DrawObjectOnGrid(xPos, yPos, gridObjectClass) {
     var gridIndex = MapGrid2dTo1d(xPos, yPos);
@@ -694,51 +648,51 @@ Monster.switchMovement();
 
 //TO DO: make enum for mobs initial positions
 
-
 document.onkeydown = checkKey; //to listen for intial user event
+
 var pacmanObj = new PacmanClass();
 
-var blinky, clyde, inky; // monsters
 var clydeTimer, inkyTimer, chainTimer; // monsters timers and chain timer
 
-function StartGame() {
-    
-    clydeTimer != null ?  clearTimeout(clydeTimer) : null;
-    inkyTimer != null ? clearTimeout(inkyTimer) : null;
-    chainTimer != null ?  clearTimeout(chainTimer) : null;
-    
-    levelOneGrid = InitialMap.slice();
-    blinky = new Monster(2, 2, 10, 4, gridObjects.BLINKY, gridObjectsClass[gridObjects.BLINKY]);
-    clyde = new Monster(7, 0, 9, 6, gridObjects.CLYDE, gridObjectsClass[gridObjects.CLYDE]);
-    inky = new Monster(-5, 3, 11, 6, gridObjects.INKY, gridObjectsClass[gridObjects.INKY]);
-    drawGrid(levelOneGrid);
 
+drawGrid(levelOneGrid);
+var blinky, clyde, inky;
+
+function StartGame() {
+
+    clydeTimer != null ? clearTimeout(clydeTimer) : null;
+    inkyTimer  != null ? clearTimeout(inkyTimer) : null;
+    chainTimer != null ? clearTimeout(chainTimer) : null;
+    
+    blinky = new Monster(0, 0, 10, 4, gridObjects.BLINKY, gridObjectsClass[gridObjects.BLINKY]);
+    clyde = new Monster(3, 0, 9, 6, gridObjects.CLYDE, gridObjectsClass[gridObjects.CLYDE]); //blinky = new Monster(2, 2, 10, 4, gridObjects.BLINKY, gridObjectsClass[gridObjects.BLINKY]);
+    inky = new Monster(-5, 3, 11, 6, gridObjects.INKY, gridObjectsClass[gridObjects.INKY]);
+
+    drawGrid(levelOneGrid);
+    
     var mobArr = [blinky];
     mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.gridObjectType]))
 
+   if (!gamePaused) {
+        timer2 = setInterval(function () { // GAME LOOP 
+            mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.lastGridObject]));
+            mobArr.forEach(mob => mob.move());
+            mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.gridObjectType]))
+            PacmanLoseLife();
 
+        }, 500);
 
-    timer2 = setInterval(function () { // GAME LOOP 
-        mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.lastGridObject]));
-        mobArr.forEach(mob => mob.move());
-        PacmanLoseLife();
-        mobArr.forEach(mob => DrawObjectOnGrid(mob.position.x, mob.position.y, gridObjectsClass[mob.gridObjectType]))
+        clydeTimer = setTimeout(function () {
+            mobArr[1] = clyde
+            inkyTimer = setTimeout(function () {
+                mobArr[2] = inky;
 
-    }, 250);
+                chainTimer = setTimeout(function () {
+                    DrawObjectOnGrid(10, 5, 'chain');
+                    levelOneGrid[MapGrid2dTo1d(10, 5)] = gridObjects.CHAIN;
+                }, 2000)
+            }, 5000); // release clyde after 10 seconds.
+        }, 5000); // release clyde after 5 seconds.
 
-clydeTimer = setTimeout(function () {
-    mobArr[1] = clyde
-    inkyTimer = setTimeout(function () {
-        mobArr[2] = inky;
-        chainTimer = setTimeout(function () {
-            DrawObjectOnGrid(10, 5, 'chain');
-            levelOneGrid[MapGrid2dTo1d(10, 5)] = gridObjects.CHAIN;
-        }, 2000)
-    }, 5000); // release clyde after 10 seconds.
-}, 5000); // release clyde after 5 seconds.
-
-
+    }
 }
-
-
-StartGame();
