@@ -77,13 +77,30 @@ div {
     background-color: black;
     display: inline-block;
 }
+.afraidmob {
+
+    width: 50px;
+    height: 50px;
+    background-image: url('./pic/af2.gif');
+    background-size: 50px;
+    background-color: black;
+    display: inline-block;
+}
 
 .chain {
 
     width: 50px;
     height: 50px;
     background-image: url('./pic/chain.jpg');
+    background-size: 50px;
+    background-color: black;
+    display: inline-block;
+}
+.apple {
 
+    width: 50px;
+    height: 50px;
+    background-image: url('./pic/app.png');
     background-size: 50px;
     background-color: black;
     display: inline-block;
@@ -135,7 +152,18 @@ div {
     margin-top: 40%;
     
 }
-
+.StartDiv{
+    position: fixed;
+      width: 970px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 200px;
+    margin: auto;
+     border: 5px #022072 solid;
+    border-radius: 30px;
+    background-color: #506BB3;
+}
 .outerDiv {
     width: 970px;
     display: flex;
