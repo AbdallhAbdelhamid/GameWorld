@@ -167,26 +167,41 @@ function PacmanLoseLife() {
     if (((PacmanPos == _BlinkyIndex) || (PacmanPos == _CLYDEIndex) || (PacmanPos == _INKYIndex)) && (noOflives >= 0)) { // collision happened
         if (PacmanPos == _BlinkyIndex) {
             if (blinky.mode != mobMode.AFRAID)
-                LoseLife(_BlinkyIndex, _CLYDEIndex, _INKYIndex)
+                LoseLife(_BlinkyIndex, _CLYDEIndex, _INKYIndex);
             else {
+                if (blinky.lastGridObject == gridObjects.COIN) {
+                    console.log("IN");
+                    coins++;
+                    PlayerScore+=5;
+                }
+                blinky.lastGridObject = gridObjects.EMPTY;
                 DrawObjectOnGrid(blinky.position.x, blinky.position.y, gridObjectsClass[gridObjects.PACMAN])
                 PlayerScore += 200;
                 blinky.position.x = 10;
                 blinky.position.y = 4;
                 blinky.mode = mobMode.ATTACK;
-                DrawObjectOnGrid(blinky.position.x, blinky.position.y, gridObjectsClass[blinky.gridObjectType])
+                DrawObjectOnGrid(blinky.position.x, blinky.position.y, gridObjectsClass[blinky.gridObjectType]);
+                ScoringTracker();
             }
         }
         if (PacmanPos == _INKYIndex) {
+
             if (inky.mode != mobMode.AFRAID)
                 LoseLife(_BlinkyIndex, _CLYDEIndex, _INKYIndex)
             else {
+
+                if (inky.lastGridObject == gridObjects.COIN) {
+                    coins++;
+                    PlayerScore+=5;
+                }
+                inky.lastGridObject = gridObjects.EMPTY;
                 DrawObjectOnGrid(inky.position.x, inky.position.y, gridObjectsClass[gridObjects.PACMAN])
                 PlayerScore += 200;
                 inky.position.x = 11;
                 inky.position.y = 6;
                 inky.mode = mobMode.ATTACK;
-                DrawObjectOnGrid(inky.position.x, inky.position.y, gridObjectsClass[inky.gridObjectType])
+                DrawObjectOnGrid(inky.position.x, inky.position.y, gridObjectsClass[inky.gridObjectType]);
+                ScoringTracker();
             }
         }
         if (PacmanPos == _CLYDEIndex)
@@ -195,12 +210,21 @@ function PacmanLoseLife() {
             if (clyde.mode != mobMode.AFRAID)
                 LoseLife(_BlinkyIndex, _CLYDEIndex, _INKYIndex);
             else {
+
+                if (clyde.lastGridObject == gridObjects.COIN) {
+                    coins++;
+                    PlayerScore+=5;
+
+                }
+                clyde.lastGridObject = gridObjects.EMPTY;
+
                 DrawObjectOnGrid(clyde.position.x, clyde.position.y, gridObjectsClass[gridObjects.PACMAN])
                 PlayerScore += 200;
                 clyde.position.x = 9;
                 clyde.position.y = 6;
                 clyde.mode = mobMode.ATTACK;
-                DrawObjectOnGrid(clyde.position.x, clyde.position.y, gridObjectsClass[clyde.gridObjectType])
+                DrawObjectOnGrid(clyde.position.x, clyde.position.y, gridObjectsClass[clyde.gridObjectType]);
+                ScoringTracker();
             }
         }
 
